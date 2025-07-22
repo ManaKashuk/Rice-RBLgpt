@@ -38,7 +38,7 @@ user_input = st.text_input("🔍 Ask Rice RBLgpt a question:")
 if user_input:
     suggestions = filtered_df[filtered_df["Question"].str.contains(user_input, case=False, na=False)]
 
-if not suggestions.empty:
+    if not suggestions.empty:
         st.markdown("**Suggestions:**")
         for idx, row in suggestions.iterrows():
             if st.button(row["Question"]):
