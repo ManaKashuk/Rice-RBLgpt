@@ -8,11 +8,9 @@ st.set_page_config(page_title="Rice RBLgpt", layout="wide")
 logo = Image.open("RBLgpt logo.png")
 
 # Use columns to align the logo and title horizontally
-col1, col2 = st.columns([1, 1])  # Adjust ratio to fit your layout
-
+col1, col2 = st.columns([1, 6])  # Adjust ratio to fit your layout
 with col1:
     st.image(logo, width=500)
-
 with col2:
     st.markdown("<h1 style='margin-bottom:0;'>Rice RBLgpt</h1>", unsafe_allow_html=True)
     st.markdown("<h4 style='margin-top:0;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h4>", unsafe_allow_html=True)
