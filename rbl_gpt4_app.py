@@ -8,7 +8,7 @@ st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 logo = Image.open("RBLgpt logo.png")
 
 # Display the logo with fixed width and no extra white space
-st.image(logo, width=250)  # Adjust width as needed to match the text
+st.image(logo, width=500)  # Adjust width as needed to match the text
 
 # Tighten the spacing between logo and title
 st.markdown("<h2 style='text-align: left; margin-top: 0px;'>Rice RBLgpt</h1>", unsafe_allow_html=True)
