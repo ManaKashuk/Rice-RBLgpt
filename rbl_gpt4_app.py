@@ -7,7 +7,7 @@ st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
 # Load and resize the logo
 logo = Image.open("RBLgpt logo.png")
-st.image(logo, width=200)
+st.image(logo, width=500)
 st.markdown("<h1 style='margin-top:-20px;'>Rice RBLgpt</h1>", unsafe_allow_html=True)
 st.subheader("Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad")
 
