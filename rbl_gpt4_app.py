@@ -18,7 +18,7 @@ st.markdown(
 
 # Load and display the logo
 logo = Image.open("RBLgpt logo.png")  # Make sure this is the file name of your PNG
-st.image(logo, use_container_width=True)
+st.image(logo, width=200)
 
 # Title & Tagline
 st.title("Rice RBLgpt")
