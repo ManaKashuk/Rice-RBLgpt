@@ -51,6 +51,6 @@ if user_input:
         if closest_matches:
             best_match = closest_matches[0]
             matched_category = df[df["Question"] == best_match]["Category"].values[0]
-            st.info(f"No exact match found, but this question may belong to **{matched_category}** category.\n\nDid you mean:\n- {best_match}")
+            st.info(f"This question may belong to **{matched_category}** category.\n\nDid you mean:\n- {best_match}")
         else:
             st.info("No similar questions found. Please try rephrasing.")
