@@ -51,6 +51,20 @@ category = st.selectbox(
 )
 filtered_df = df[df["Category"] == category]
 
+# Download chat history button (placed before input so user can download anytime)
+if st.session_state.messages:
+    chat_text = ""
+    for msg in st.session_state.messages:
+        role = "You" if msg["role"] == "user" else "Rice RBLgpt"
+        chat_text += f"{role}: {msg['content']}\n\n"
+
+    st.download_button(
+        label="📥 Download Chat History",
+        data=chat_text,
+        file_name="rblgpt_chat_history.txt",
+        mime="text/plain"
+    )
+
 # Show suggested questions as buttons in an expander
 with st.expander("💡 Suggested questions from this category", expanded=False):
     for i, question in enumerate(filtered_df["Question"].tolist()):
@@ -138,17 +152,3 @@ if user_input:
                 with st.chat_message("assistant"):
                     st.markdown(f"**Answer:** {answer}")
                 st.session_state.messages.append({"role": "assistant", "content": f"**Answer:** {answer}"})
-
-# Download chat history button
-if st.session_state.messages:
-    chat_text = ""
-    for msg in st.session_state.messages:
-        role = "You" if msg["role"] == "user" else "Rice RBLgpt"
-        chat_text += f"{role}: {msg['content']}\n\n"
-
-    st.download_button(
-        label="📥 Download Chat History",
-        data=chat_text,
-        file_name="rblgpt_chat_history.txt",
-        mime="text/plain"
-    )
