@@ -2,27 +2,24 @@
 import streamlit as st
 from PIL import Image
 
-# App Title and Logo
+import streamlit as st
+
+# App Title and Layout
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
-# Load and resize the logo
-logo = Image.open("RBLgpt logo.png")
-st.image(logo, width=500)
-st.markdown("<h1 style='margin-top:-20px;'>Rice RBLgpt</h1>", unsafe_allow_html=True)
-st.subheader("Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad")
-
-# Add left-aligned logo using HTML
+# Display logo and title side-by-side (logo left, text right)
 st.markdown(
     """
     <div style="display: flex; align-items: center;">
-        <img src="https://images.squarespace-cdn.com/content/v1/64e3b8652d51484e88798b28/d6b0de0c-44c7-4796-a116-2ab6da4f7bb0/BiotechLaunchPad.png?format=1500w" width="120"/>
-        <h1 style="margin-left: 20px;">Rice RBLgpt</h1>
+        <img src="https://images.squarespace-cdn.com/content/v1/64e3b8652d51484e88798b28/d6b0de0c-44c7-4796-a116-2ab6da4f7bb0/BiotechLaunchPad.png?format=1500w" width="120" style="margin-right: 20px;"/>
+        <div>
+            <h1 style="margin-bottom: 0;">Rice RBLgpt</h1>
+            <p style="margin-top: 0;">Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</p>
+        </div>
     </div>
-    <p style="margin-top: -20px;">Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</p>
     """,
     unsafe_allow_html=True
 )
-
 
 # Sidebar for selecting category
 category = st.sidebar.selectbox("Select Category", ["Pre-Award", "Post-Award"])
