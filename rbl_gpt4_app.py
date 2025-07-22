@@ -48,7 +48,7 @@ if not suggestions.empty:
         all_questions = df["Question"].tolist()
         closest_matches = get_close_matches(user_input, all_questions, n=1, cutoff=0.6)  # Higher cutoff = more confident
 
-     if closest_matches:
+        if closest_matches:
             best_match = closest_matches[0]
             matched_row = df[df["Question"] == best_match].iloc[0]
             matched_category = matched_row["Category"]
@@ -57,5 +57,5 @@ if not suggestions.empty:
             st.markdown(f"**Note:** Your question seems related to the **{matched_category}** category.")
             st.markdown(f"**Suggested Question:** {best_match}")
             st.markdown(f"**Answer:** {matched_answer}")
-    else:
+        else:
             st.info("No similar questions found. Please try rephrasing.")
