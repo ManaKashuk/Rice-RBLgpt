@@ -145,3 +145,23 @@ if st.session_state.messages:
         file_name="rblgpt_chat_history.txt",
         mime="text/plain"
     )
+def submit_question():
+    st.session_state.submitted = True
+
+# Text input with on_change triggers when user presses Enter
+user_input = st.text_input("Ask your question...", key="typed_question", on_change=submit_question)
+
+# Submit button
+submit = st.button("💬 Submit", on_click=submit_question)
+
+# Check if submitted by either Enter or button
+if st.session_state.get("submitted", False) and user_input:
+    # Reset submit flag
+    st.session_state.submitted = False
+
+    # Your existing logic here to handle the question
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    with st.chat_message("user"):
+        st.markdown(user_input)
+
+    # ... rest of matching and response logic ...
