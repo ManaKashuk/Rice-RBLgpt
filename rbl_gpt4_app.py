@@ -2,7 +2,7 @@ import streamlit as st
 from PIL import Image
 
 # Set the page configuration
-st.set_page_config(page_title="Rice RBLgpt", layout="left")
+st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
 # Load and display the logo left above the title with adjusted width
 logo = Image.open("RBLgpt logo.png")
