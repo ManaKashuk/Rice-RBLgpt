@@ -13,7 +13,7 @@ st.image(logo, width=200)
 st.markdown("<h2 style='text-align: left; margin-top: -50px;'>Rice RBLgpt</h1>", unsafe_allow_html=True)
 
 # Subtitle directly below the title
-st.markdown("<h5 style='text-align: left; margin-top: -100px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h4>", unsafe_allow_html=True)
+st.markdown("<h5 style='text-align: left; margin-top: -30px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h4>", unsafe_allow_html=True)
 
 # Sidebar for selecting category
 category = st.sidebar.selectbox("Select Category", ["Pre-Award", "Post-Award"])
