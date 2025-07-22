@@ -24,41 +24,62 @@ import pandas as pd
 import streamlit as st
 from difflib import get_close_matches
 
-# Load your Q&A data
+# Load data
 df = pd.read_csv("sample_questions.csv")
 
-# Initialize session state
+# Set up session state
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "suggested_question" not in st.session_state:
     st.session_state.suggested_question = None
+if "suggested_category" not in st.session_state:
     st.session_state.suggested_category = None
+if "suggested_answer" not in st.session_state:
     st.session_state.suggested_answer = None
+if "awaiting_confirmation" not in st.session_state:
     st.session_state.awaiting_confirmation = False
 
-# Display past chat messages
+# CATEGORY DROPDOWN
+category = st.selectbox(
+    "📂 Select a category to guide your question:",
+    ["Pre-Award", "Post-Award", "Compliance", "System Navigation", "Clinical/Translational Research"]
+)
+filtered_df = df[df["Category"] == category]
+
+# AUTOCOMPLETE SUGGESTIONS
+with st.expander("💡 Suggested questions from this category", expanded=False):
+    for question in filtered_df["Question"].tolist():
+        if st.button(question):
+            answer = filtered_df[filtered_df["Question"] == question]["Answer"].values[0]
+            with st.chat_message("assistant"):
+                st.markdown(f"**Answer:** {answer}")
+            st.session_state.messages.append({"role": "assistant", "content": f"**Answer:** {answer}"})
+
+# DISPLAY CHAT HISTORY
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# Handle user input
-user_input = st.chat_input("Ask a question about research support at Rice...")
+# USER INPUT
+user_input = st.chat_input("Ask your question...")
 
 if user_input:
+    # Store user message
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # Search for exact match
-    match_row = df[df["Question"].str.lower() == user_input.lower()]
+    # Try to match within selected category
+    match_row = filtered_df[filtered_df["Question"].str.lower() == user_input.lower()]
     if not match_row.empty:
         answer = match_row.iloc[0]["Answer"]
         with st.chat_message("assistant"):
             st.markdown(f"**Answer:** {answer}")
         st.session_state.messages.append({"role": "assistant", "content": f"**Answer:** {answer}"})
+        st.session_state.awaiting_confirmation = False
 
     elif not st.session_state.awaiting_confirmation:
-        # No exact match, try finding closest match
+        # Try fuzzy match across all questions
         all_questions = df["Question"].tolist()
         close_matches = get_close_matches(user_input, all_questions, n=1, cutoff=0.6)
 
@@ -72,8 +93,8 @@ if user_input:
             st.session_state.awaiting_confirmation = True
 
             with st.chat_message("assistant"):
-                st.markdown(f"🤔 I couldn't find an exact match, but your question may belong to the **{st.session_state.suggested_category}** category.")
-                st.markdown(f"Did you mean:\n> **{st.session_state.suggested_question}**")
+                st.markdown(f"🤔 I couldn’t find an exact match in **{category}**, but this might help:")
+                st.markdown(f"Did you mean:\n> **{best_match}**\n\n_Category: {st.session_state.suggested_category}_")
 
                 col1, col2 = st.columns(2)
                 with col1:
@@ -86,14 +107,15 @@ if user_input:
                         })
                         st.session_state.awaiting_confirmation = False
                 with col2:
-                    if st.button("❌ No, that's not it"):
+                    if st.button("❌ No, try again"):
                         with st.chat_message("assistant"):
                             st.info("Okay, feel free to rephrase your question.")
                         st.session_state.awaiting_confirmation = False
+
         else:
             with st.chat_message("assistant"):
-                st.info("Sorry, I couldn’t find anything similar. Please try rephrasing.")
+                st.info("Sorry, I couldn't find a related question. Please try rephrasing.")
             st.session_state.messages.append({
                 "role": "assistant",
-                "content": "Sorry, I couldn’t find anything similar. Please try rephrasing."
+                "content": "Sorry, I couldn't find a related question. Please try rephrasing."
             })
