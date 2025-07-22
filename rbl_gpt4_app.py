@@ -28,7 +28,7 @@ import streamlit as st
 df = pd.read_csv("sample_questions.csv")
 
 # Let the user choose a category
-category = st.selectbox("Select a category", ["Pre-Award", "Post-Award"])
+category = st.selectbox("Select a category", ["Pre-Award", "Post-Award", "Compliance", "System Navigation", "Clinical/Translational Research"])
 filtered_df = df[df["Category"] == category]
 
 # Show a text input for the question
