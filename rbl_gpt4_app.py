@@ -57,6 +57,6 @@ else:
         st.markdown(f"**Note:** Your question seems related to the **{matched_category}** category.")
         st.markdown(f"**Suggested Question:** {best_match}")
         st.markdown(f"**Answer:** {matched_answer}")
-    else:
-        st.info("No similar questions found. Please try rephrasing.")
+else:
+    st.info("No similar questions found. Please try rephrasing.")
 
