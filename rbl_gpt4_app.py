@@ -60,16 +60,28 @@ for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# USER INPUT
-user_input = st.chat_input("Ask your question...")
+# USER INPUT + AUTOCOMPLETE
+user_input = st.text_input("Ask your question...", key="typed_question")
 
+# Live suggestions while typing
 if user_input:
-    # Store user message
+    matches = filtered_df[filtered_df["Question"].str.contains(user_input, case=False, na=False)]
+    if not matches.empty:
+        st.markdown("**🔎 Suggestions:**")
+        for q in matches["Question"].head(5):
+            if st.button(q):
+                answer = filtered_df[filtered_df["Question"] == q]["Answer"].values[0]
+                with st.chat_message("assistant"):
+                    st.markdown(f"**Answer:** {answer}")
+                st.session_state.messages.append({"role": "assistant", "content": f"**Answer:** {answer}"})
+
+submit = st.button("💬 Submit")
+
+if submit and user_input:
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # Try to match within selected category
     match_row = filtered_df[filtered_df["Question"].str.lower() == user_input.lower()]
     if not match_row.empty:
         answer = match_row.iloc[0]["Answer"]
@@ -79,7 +91,6 @@ if user_input:
         st.session_state.awaiting_confirmation = False
 
     elif not st.session_state.awaiting_confirmation:
-        # Try fuzzy match across all questions
         all_questions = df["Question"].tolist()
         close_matches = get_close_matches(user_input, all_questions, n=1, cutoff=0.6)
 
@@ -111,7 +122,6 @@ if user_input:
                         with st.chat_message("assistant"):
                             st.info("Okay, feel free to rephrase your question.")
                         st.session_state.awaiting_confirmation = False
-
         else:
             with st.chat_message("assistant"):
                 st.info("Sorry, I couldn't find a related question. Please try rephrasing.")
