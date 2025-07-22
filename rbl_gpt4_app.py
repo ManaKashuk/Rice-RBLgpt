@@ -1,47 +1,46 @@
 import streamlit as st
+import pandas as pd
 from PIL import Image
+from difflib import get_close_matches
+
 # Set the page configuration
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
-# Load and display the logo left above the title with adjusted width
-logo = Image.open("RBLgpt logo.png")
+# Load and display the logo
+try:
+    logo = Image.open("RBLgpt logo.png")
+    st.image(logo, width=100)
+except FileNotFoundError:
+    st.warning("Logo file 'RBLgpt logo.png' not found.")
 
-# Display the logo with fixed width and no extra white space
-st.image(logo, width=100)
-
-# Tighten the spacing between logo and title
-st.markdown("<h2 style='text-align: left; margin-top: -20px;'>Rice RBLgpt</h1>", unsafe_allow_html=True)
-
-# Subtitle directly below the title
-st.markdown("<h5 style='text-align: left; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h4>", unsafe_allow_html=True)
+# Display title and subtitle
+st.markdown("<h2 style='text-align: left; margin-top: -20px;'>Rice RBLgpt</h2>", unsafe_allow_html=True)
+st.markdown("<h5 style='text-align: left; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h5>", unsafe_allow_html=True)
 
 # File Upload Box
 uploaded_file = st.file_uploader("📎 Upload a document", type=["pdf", "docx", "xlsx", "csv"])
-
 if uploaded_file:
     st.success(f"Uploaded file: {uploaded_file.name}")
-import pandas as pd
-import streamlit as st
-from difflib import get_close_matches
 
 # Load data
-df = pd.read_csv("sample_questions.csv")
+try:
+    df = pd.read_csv("sample_questions.csv")
+except FileNotFoundError:
+    st.error("The file 'sample_questions.csv' is missing. Please upload it or place it in the app directory.")
+    st.stop()
 
 # Initialize session state
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-if "suggested_question" not in st.session_state:
-    st.session_state.suggested_question = None
-if "suggested_category" not in st.session_state:
-    st.session_state.suggested_category = None
-if "suggested_answer" not in st.session_state:
-    st.session_state.suggested_answer = None
-if "awaiting_confirmation" not in st.session_state:
-    st.session_state.awaiting_confirmation = False
-if "submitted" not in st.session_state:
-    st.session_state.submitted = False
-if "typed_question" not in st.session_state:
-    st.session_state.typed_question = ""
+for key, default in {
+    "messages": [],
+    "suggested_question": None,
+    "suggested_category": None,
+    "suggested_answer": None,
+    "awaiting_confirmation": False,
+    "submitted": False,
+    "typed_question": ""
+}.items():
+    if key not in st.session_state:
+        st.session_state[key] = default
 
 def submit_question():
     st.session_state.submitted = True
@@ -130,14 +129,12 @@ if st.session_state.submitted and st.session_state.typed_question:
                             "content": f"**Answer:** {st.session_state.suggested_answer}"
                         })
                         st.session_state.awaiting_confirmation = False
-                        # Clear input box
                         st.session_state.typed_question = ""
                 with col2:
                     if st.button("❌ No, try again", key="confirm_no"):
                         with st.chat_message("assistant"):
                             st.info("Okay, feel free to rephrase your question.")
                         st.session_state.awaiting_confirmation = False
-                        # Clear input box
                         st.session_state.typed_question = ""
 
         else:
@@ -155,5 +152,4 @@ if st.session_state.typed_question:
         st.markdown("**🔎 Suggestions:**")
         for i, q in enumerate(matches["Question"].head(5)):
             if st.button(q, key=f"suggestion_btn_{i}"):
-                # When user clicks suggestion, fill input box with that question
                 st.session_state.typed_question = q
