@@ -49,7 +49,7 @@ import streamlit as st
 # Load questions
 df = pd.read_csv("sample_questions.csv")
 
-category = st.categorybox("Select a category", ["Pre-Award", "Post-Award"])
+category = st.selectionbox("Select a category", ["Pre-Award", "Post-Award"])
 filtered_df = df[df["Category"] == category]
 question = st.selectbox("Choose a question", filtered_df["Question"].tolist())
 
