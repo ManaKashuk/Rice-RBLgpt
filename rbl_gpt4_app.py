@@ -47,7 +47,3 @@ if question:
         f"Simulated RBLgpt response for the '{category}' workflow. You asked: '{question}'")
     st.markdown("### 💬 Answer:")
     st.write(answer)
-
-    if st.button("Use This Sample Question"):
-        st.session_state.user_question = question
-        st.success(f"Selected question loaded: {question}")
