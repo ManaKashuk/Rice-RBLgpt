@@ -16,13 +16,16 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Load and display the logo
-logo = Image.open("RBLgpt logo.png")  # Make sure this is the file name of your PNG
-st.image(logo, width=200)
+# Load and resize the logo
+logo = Image.open("RBLgpt logo.png")
+st.image(logo, width=200)  # Smaller width
 
-# Title & Tagline
+# Reduce space between logo and title
+st.markdown("<div style='margin-top: -30px'></div>", unsafe_allow_html=True)
+
+# App title
 st.title("Rice RBLgpt")
-st.subheader("Empowering Research Integrity and Impact at Rice Biotech LaunchPad")
+st.subheader("Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad")
 
 # Sidebar
 section = st.sidebar.selectbox("Select Workflow Section", ["Pre-Award", "Post-Award"])
