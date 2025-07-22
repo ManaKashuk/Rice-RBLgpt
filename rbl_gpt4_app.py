@@ -1,13 +1,27 @@
-
 import streamlit as st
 from PIL import Image
+import base64
+from io import BytesIO
 
 # App Title and Layout
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
-# Load and resize the logo
-logo = Image.open("RBLgpt logo.png")
-st.image(logo, width=500) style="margin-right: 20px;"/>
+# Convert local image to base64 string
+def get_base64_image(image_path):
+    img = Image.open(image_path)
+    buffered = BytesIO()
+    img.save(buffered, format="PNG")
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+    return img_str
+
+# Load your local logo image
+logo_base64 = get_base64_image("RBLgpt logo.png")
+
+# HTML layout with logo on the left
+st.markdown(
+    f"""
+    <div style="display: flex; align-items: center; margin-bottom: 20px;">
+        <img src="data:image/png;base64,{logo_base64}" width="100" style="margin-right: 20px;" />
         <div>
             <h1 style="margin-bottom: 0;">Rice RBLgpt</h1>
             <p style="margin-top: 0;">Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</p>
@@ -16,6 +30,7 @@ st.image(logo, width=500) style="margin-right: 20px;"/>
     """,
     unsafe_allow_html=True
 )
+
 
 # Sidebar for selecting category
 category = st.sidebar.selectbox("Select Category", ["Pre-Award", "Post-Award"])
