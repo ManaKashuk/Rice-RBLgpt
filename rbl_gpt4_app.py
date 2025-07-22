@@ -1,7 +1,7 @@
 import streamlit as st
 
 # Display local logo image
-st.image("BiotechLaunchPad.png", use_column_width=True)
+st.image("BiotechLaunchPad.png", use_container_width=True)
 
 st.title("RBLgpt: Research Business Logic Assistant")
 
