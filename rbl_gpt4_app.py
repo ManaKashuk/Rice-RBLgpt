@@ -4,7 +4,7 @@ from PIL import Image
 # Set the page configuration
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
-# Load and display the logo centered above the title with adjusted width
+# Load and display the logo left above the title with adjusted width
 logo = Image.open("RBLgpt logo.png")
 
 # Display the logo with fixed width and no extra white space
