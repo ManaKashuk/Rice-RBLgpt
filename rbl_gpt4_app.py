@@ -45,25 +45,19 @@ mock_qa = {
             "Refer to Uniform Guidance (2 CFR 200) — commonly allowable costs include personnel, supplies, and travel directly tied to project aims.",
     }
 }
+import pandas as pd
+import streamlit as st
 
-# Display mock answer
+# Load questions
+df = pd.read_csv("sample_questions.csv")
+
+section = st.selectbox("Select a section", ["Pre-Award", "Post-Award"])
+filtered_df = df[df["Section"] == section]
+question = st.selectbox("Choose a question", filtered_df["Question"].tolist())
+
 if question:
-    answer = mock_qa.get(category, {}).get(question,
-        f"Simulated RBLgpt response for the '{category}' workflow. You asked: '{question}'")
-    st.markdown("### 💬 Answer:")
-    st.write(answer)
+    answer = filtered_df[df["Question"] == question]["Answer"].values[0]
+    st.markdown(f"**Answer:** {answer}")
 
-elif section == "Post-Award":
-    if "burn rate" in q:
-        return "Use iO Award Summary → Budget vs. Actuals to view burn rate."
-    elif "no-cost extension" in q:
-        return "Submit an NCE in iO with justification, updated timeline, PI & DA approvals."
-    elif "allowable" in q or "expenses" in q:
-        return "Expenses allowed must follow OMB Uniform Guidance; common items: personnel, travel, supplies. Exclusions include alcohol & administrative salaries."
-    elif "closeout" in q or "final report" in q:
-        return "Submit final reports through OSP/RCA. Close out invoices, equipment, cost sharing, and ensure compliance within 120 days of award end."
-    elif "cost transfer" in q or "overspend" in q:
-        return "RCA handles overspend: cost transfers go to cost-share projects or faculty funds per university policy."
-    else:
-        return "Refer to Rice’s RCA and OSP SOPs for post-award actions and deadlines."
+
 
