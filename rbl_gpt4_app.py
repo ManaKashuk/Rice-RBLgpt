@@ -1,6 +1,5 @@
 import streamlit as st
 from PIL import Image
-
 # Set the page configuration
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
