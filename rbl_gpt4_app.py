@@ -21,7 +21,7 @@ logo_base64 = get_base64_image("RBLgpt logo.png")
 st.markdown(
     f"""
     <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <img src="data:image/png;base64,{logo_base64}" width="500" style="margin-right: 20px;" />
+        <img src="data:image/png;base64,{logo_base64}" width="300" style="margin-right: 20px;" />
         <div>
             <h1 style="margin-bottom: 0;">Rice RBLgpt</h1>
             <p style="margin-top: 0;">Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</p>
