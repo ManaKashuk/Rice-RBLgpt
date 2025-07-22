@@ -8,7 +8,7 @@ st.set_page_config(page_title="Rice RBLgpt", layout="wide")
 logo = Image.open("RBLgpt logo.png")
 
 # Use columns to align the logo and title horizontally
-col1, col2 = st.columns([6, 6])  # Adjust ratio to fit your layout
+col1, col2 = st.columns([-1, -3])  # Adjust ratio to fit your layout
 with col1:
     st.image(logo, width=500)
 with col2:
