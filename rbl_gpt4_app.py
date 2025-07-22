@@ -1,40 +1,21 @@
 import streamlit as st
 from PIL import Image
-import base64
-from io import BytesIO
 
+# Set the layout to wide to reduce unnecessary spacing
 st.set_page_config(page_title="Rice RBLgpt", layout="wide")
 
-# Function to convert image to base64
-def get_base64_image(image_path):
-    img = Image.open(image_path)
-    buffered = BytesIO()
-    img.save(buffered, format="PNG")
-    img_str = base64.b64encode(buffered.getvalue()).decode()
-    return img_str
+# Load the logo
+logo = Image.open("RBLgpt logo.png")
 
-# Get base64 image
-logo_base64 = get_base64_image("RBLgpt logo.png")
+# Use columns to align the logo and title horizontally
+col1, col2 = st.columns([1, 6])  # Adjust ratio to fit your layout
 
-# Display logo and title with minimal spacing
-st.markdown(
-    f"""
-    <style>
-    .reportview-container .main .block-container {{
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-    }}
-    </style>
-    <div style="display: flex; align-items: center; gap: 1px; margin-top: 0px; margin-bottom: 5px;">
-        <img src="data:image/png;base64,{logo_base64}" width="500" style="margin: 0;" />
-        <div style="line-height: 1.2;">
-            <h1 style="margin: 0; font-size: 1.8rem;">Rice RBLgpt</h1>
-            <p style="margin: 0; font-size: 1rem;">Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</p>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+with col1:
+    st.image(logo, width=100)
+
+with col2:
+    st.markdown("<h1 style='margin-bottom:0;'>Rice RBLgpt</h1>", unsafe_allow_html=True)
+    st.markdown("<h4 style='margin-top:0;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h4>", unsafe_allow_html=True)
 
 # Sidebar for selecting category
 category = st.sidebar.selectbox("Select Category", ["Pre-Award", "Post-Award"])
