@@ -59,5 +59,3 @@ if not suggestions.empty:
             st.markdown(f"**Answer:** {matched_answer}")
         else:
             st.info("No similar questions found. Please try rephrasing.")
-
-
