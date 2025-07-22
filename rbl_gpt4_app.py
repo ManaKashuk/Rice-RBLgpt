@@ -53,8 +53,8 @@ filtered_df = df[df["Category"] == category]
 
 # Show suggested questions as buttons in an expander
 with st.expander("💡 Suggested questions from this category", expanded=False):
-    for question in filtered_df["Question"].tolist():
-        if st.button(question):
+    for i, question in enumerate(filtered_df["Question"].tolist()):
+        if st.button(question, key=f"category_suggestion_btn_{i}"):
             answer = filtered_df[filtered_df["Question"] == question]["Answer"].values[0]
             with st.chat_message("assistant"):
                 st.markdown(f"**Answer:** {answer}")
@@ -106,7 +106,7 @@ if st.session_state.submitted and user_input:
 
                 col1, col2 = st.columns(2)
                 with col1:
-                    if st.button("✅ Yes, show answer"):
+                    if st.button("✅ Yes, show answer", key="confirm_yes"):
                         with st.chat_message("assistant"):
                             st.markdown(f"**Answer:** {st.session_state.suggested_answer}")
                         st.session_state.messages.append({
@@ -115,7 +115,7 @@ if st.session_state.submitted and user_input:
                         })
                         st.session_state.awaiting_confirmation = False
                 with col2:
-                    if st.button("❌ No, try again"):
+                    if st.button("❌ No, try again", key="confirm_no"):
                         with st.chat_message("assistant"):
                             st.info("Okay, feel free to rephrase your question.")
                         st.session_state.awaiting_confirmation = False
@@ -132,8 +132,8 @@ if user_input:
     matches = filtered_df[filtered_df["Question"].str.contains(user_input, case=False, na=False)]
     if not matches.empty:
         st.markdown("**🔎 Suggestions:**")
-        for q in matches["Question"].head(5):
-            if st.button(q):
+        for i, q in enumerate(matches["Question"].head(5)):
+            if st.button(q, key=f"suggestion_btn_{i}"):
                 answer = filtered_df[filtered_df["Question"] == q]["Answer"].values[0]
                 with st.chat_message("assistant"):
                     st.markdown(f"**Answer:** {answer}")
