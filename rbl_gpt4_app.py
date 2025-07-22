@@ -27,7 +27,7 @@ from difflib import get_close_matches
 # Load data
 df = pd.read_csv("sample_questions.csv")
 
-# Set up session state
+# Initialize session state
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "suggested_question" not in st.session_state:
@@ -38,15 +38,20 @@ if "suggested_answer" not in st.session_state:
     st.session_state.suggested_answer = None
 if "awaiting_confirmation" not in st.session_state:
     st.session_state.awaiting_confirmation = False
+if "submitted" not in st.session_state:
+    st.session_state.submitted = False
 
-# CATEGORY DROPDOWN
+def submit_question():
+    st.session_state.submitted = True
+
+# Category dropdown
 category = st.selectbox(
     "📂 Select a category to guide your question:",
     ["Pre-Award", "Post-Award", "Compliance", "System Navigation", "Clinical/Translational Research"]
 )
 filtered_df = df[df["Category"] == category]
 
-# AUTOCOMPLETE SUGGESTIONS
+# Show suggested questions as buttons in an expander
 with st.expander("💡 Suggested questions from this category", expanded=False):
     for question in filtered_df["Question"].tolist():
         if st.button(question):
@@ -55,40 +60,24 @@ with st.expander("💡 Suggested questions from this category", expanded=False):
                 st.markdown(f"**Answer:** {answer}")
             st.session_state.messages.append({"role": "assistant", "content": f"**Answer:** {answer}"})
 
-# DISPLAY CHAT HISTORY
+# Display chat history
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# USER INPUT + AUTOCOMPLETE
-user_input = st.text_input("Ask your question...", key="typed_question")
-
-# Live suggestions while typing
-if user_input:
-    matches = filtered_df[filtered_df["Question"].str.contains(user_input, case=False, na=False)]
-    if not matches.empty:
-        st.markdown("**🔎 Suggestions:**")
-        for q in matches["Question"].head(5):
-            if st.button(q):
-                answer = filtered_df[filtered_df["Question"] == q]["Answer"].values[0]
-                with st.chat_message("assistant"):
-                    st.markdown(f"**Answer:** {answer}")
-                st.session_state.messages.append({"role": "assistant", "content": f"**Answer:** {answer}"})
-
-def submit_question():
-    st.session_state.submitted = True
-
-# Text input with on_change triggers when user presses Enter
+# User input with Enter key submission and Submit button
 user_input = st.text_input("Ask your question...", key="typed_question", on_change=submit_question)
-
-# Submit button
 submit = st.button("💬 Submit", on_click=submit_question)
 
-# Check if submitted by either Enter or button
-if st.session_state.get("submitted", False) and user_input:
-    # Reset submit flag
+# Process the input if submitted by either Enter or button
+if st.session_state.submitted and user_input:
     st.session_state.submitted = False
 
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    with st.chat_message("user"):
+        st.markdown(user_input)
+
+    # Check for exact match in chosen category
     match_row = filtered_df[filtered_df["Question"].str.lower() == user_input.lower()]
     if not match_row.empty:
         answer = match_row.iloc[0]["Answer"]
@@ -97,6 +86,7 @@ if st.session_state.get("submitted", False) and user_input:
         st.session_state.messages.append({"role": "assistant", "content": f"**Answer:** {answer}"})
         st.session_state.awaiting_confirmation = False
 
+    # If no exact match, suggest closest question with confirmation
     elif not st.session_state.awaiting_confirmation:
         all_questions = df["Question"].tolist()
         close_matches = get_close_matches(user_input, all_questions, n=1, cutoff=0.6)
@@ -136,16 +126,26 @@ if st.session_state.get("submitted", False) and user_input:
                 "role": "assistant",
                 "content": "Sorry, I couldn't find a related question. Please try rephrasing."
             })
-import io
 
-# Convert chat messages to plain text
+# Live autocomplete suggestions while typing
+if user_input:
+    matches = filtered_df[filtered_df["Question"].str.contains(user_input, case=False, na=False)]
+    if not matches.empty:
+        st.markdown("**🔎 Suggestions:**")
+        for q in matches["Question"].head(5):
+            if st.button(q):
+                answer = filtered_df[filtered_df["Question"] == q]["Answer"].values[0]
+                with st.chat_message("assistant"):
+                    st.markdown(f"**Answer:** {answer}")
+                st.session_state.messages.append({"role": "assistant", "content": f"**Answer:** {answer}"})
+
+# Download chat history button
 if st.session_state.messages:
     chat_text = ""
     for msg in st.session_state.messages:
         role = "You" if msg["role"] == "user" else "Rice RBLgpt"
         chat_text += f"{role}: {msg['content']}\n\n"
 
-    # Create download button
     st.download_button(
         label="📥 Download Chat History",
         data=chat_text,
