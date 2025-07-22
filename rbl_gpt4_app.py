@@ -14,7 +14,7 @@ st.image(logo, width=250)  # Adjust width as needed to match the text
 st.markdown("<h1 style='text-align: left; margin-top: -50px;'>Rice RBLgpt</h1>", unsafe_allow_html=True)
 
 # Subtitle directly below the title
-st.markdown("<h4 style='text-align: left; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h4>", unsafe_allow_html=True)
+st.markdown("<h5 style='text-align: left; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h4>", unsafe_allow_html=True)
 
 # Sidebar for selecting category
 category = st.sidebar.selectbox("Select Category", ["Pre-Award", "Post-Award"])
