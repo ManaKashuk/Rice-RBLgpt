@@ -129,3 +129,19 @@ if submit and user_input:
                 "role": "assistant",
                 "content": "Sorry, I couldn't find a related question. Please try rephrasing."
             })
+import io
+
+# Convert chat messages to plain text
+if st.session_state.messages:
+    chat_text = ""
+    for msg in st.session_state.messages:
+        role = "You" if msg["role"] == "user" else "Rice RBLgpt"
+        chat_text += f"{role}: {msg['content']}\n\n"
+
+    # Create download button
+    st.download_button(
+        label="📥 Download Chat History",
+        data=chat_text,
+        file_name="rblgpt_chat_history.txt",
+        mime="text/plain"
+    )
