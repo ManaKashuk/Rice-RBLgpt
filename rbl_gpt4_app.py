@@ -10,7 +10,7 @@ logo = Image.open("RBLgpt logo.png")
 st.image(logo, width=100)
 
 # Tighten the spacing between logo and title
-st.markdown("<h2 style='text-align: left; margin-top: -50px;'>Rice RBLgpt</h1>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: left; margin-top: -20px;'>Rice RBLgpt</h1>", unsafe_allow_html=True)
 
 # Subtitle directly below the title
 st.markdown("<h5 style='text-align: left; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h4>", unsafe_allow_html=True)
