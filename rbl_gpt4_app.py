@@ -44,8 +44,17 @@ if user_input:
         for idx, row in suggestions.iterrows():
             if st.button(row["Question"]):  # Each suggestion is a button
                 st.markdown(f"**Answer:** {row['Answer']}")
-    else:
-        st.info("No matching questions found.")
+   else:
+        # No matches found — try to suggest the best category
+        all_questions = df["Question"].tolist()
+        closest_matches = get_close_matches(user_input, all_questions, n=1, cutoff=0.3)
+
+        if closest_matches:
+            best_match = closest_matches[0]
+            matched_category = df[df["Question"] == best_match]["Category"].values[0]
+            st.info(f"No exact match found, but this question may belong to **{matched_category}** category.\n\nDid you mean:\n- {best_match}")
+        else:
+            st.info("No similar questions found. Please try rephrasing.")
 
 
 
