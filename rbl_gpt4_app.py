@@ -5,9 +5,9 @@ from PIL import Image
 # App Title and Logo
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
-# Load logo
-logo_url = "https://images.squarespace-cdn.com/content/v1/64e3b8652d51484e88798b28/d6b0de0c-44c7-4796-a116-2ab6da4f7bb0/BiotechLaunchPad.png?format=1500w"
-st.image(logo_url, width=200)
+# Load and resize the logo
+logo = Image.open("RBLgpt logo.png")
+st.image(logo, width=200)
 st.markdown("<h1 style='margin-top:-20px;'>Rice RBLgpt</h1>", unsafe_allow_html=True)
 st.subheader("Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad")
 
