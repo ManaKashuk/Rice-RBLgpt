@@ -46,16 +46,29 @@ mock_qa = {
 import pandas as pd
 import streamlit as st
 
-# Load questions
+# Load your Q&A data
 df = pd.read_csv("sample_questions.csv")
 
+# Let the user choose a category
 category = st.selectbox("Select a category", ["Pre-Award", "Post-Award"])
 filtered_df = df[df["Category"] == category]
-question = st.selectbox("Choose a question", filtered_df["Question"].tolist())
 
-if question:
-    answer = filtered_df[df["Question"] == question]["Answer"].values[0]
-    st.markdown(f"**Answer:** {answer}")
+# Show a text input for the question
+user_input = st.text_input("🔍 Ask Rice RBLgpt a question:")
+
+# Suggest matching questions
+if user_input:
+    # Find closest matches
+    suggestions = filtered_df[filtered_df["Question"].str.contains(user_input, case=False, na=False)]
+
+    if not suggestions.empty:
+        st.markdown("**Suggestions:**")
+        for idx, row in suggestions.iterrows():
+            if st.button(row["Question"]):  # Each suggestion is a button
+                st.markdown(f"**Answer:** {row['Answer']}")
+    else:
+        st.info("No matching questions found.")
+
 
 
 
