@@ -2,9 +2,6 @@
 import streamlit as st
 from PIL import Image
 
-# App Title and Logo
-st.set_page_config(page_title="Rice RBLgpt", layout="centered")
-
 # Load and display logo and title closer together
 logo = Image.open("RBLgpt logo.png")
 col1, col2 = st.columns([1, 2])  # Adjust ratio as needed
