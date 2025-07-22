@@ -10,7 +10,15 @@ logo = Image.open("RBLgpt logo.png")
 st.image(logo, width=500)
 st.markdown("<h1 style='margin-top:-20px;'>Rice RBLgpt</h1>", unsafe_allow_html=True)
 st.subheader("Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad")
+from PIL import Image
+import streamlit as st
 
+# Load and display logo and title closer together
+col1, col2 = st.columns([1, 5])  # Adjust ratio as needed
+with col1:
+    st.image("RBLgpt logo.png", width=80)  # Reduce width to make it smaller
+with col2:
+    st.markdown("<h1 style='margin-top: 10px;'>Rice RBLgpt</h1>", unsafe_allow_html=True)
 # Sidebar for selecting category
 category = st.sidebar.selectbox("Select Category", ["Pre-Award", "Post-Award"])
 
