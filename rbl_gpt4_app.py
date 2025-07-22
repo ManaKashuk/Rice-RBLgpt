@@ -26,7 +26,7 @@ st.markdown(
     }}
     </style>
     <div style="display: flex; align-items: center; gap: 10px; margin-top: 0px; margin-bottom: 5px;">
-        <img src="data:image/png;base64,{logo_base64}" width="175" style="margin: 0;" />
+        <img src="data:image/png;base64,{logo_base64}" width="500" style="margin: 0;" />
         <div style="line-height: 1.2;">
             <h1 style="margin: 0; font-size: 1.8rem;">Rice RBLgpt</h1>
             <p style="margin: 0; font-size: 1rem;">Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</p>
