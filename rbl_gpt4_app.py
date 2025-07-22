@@ -15,9 +15,6 @@ st.markdown("<h2 style='text-align: left; margin-top: -20px;'>Rice RBLgpt</h1>",
 # Subtitle directly below the title
 st.markdown("<h5 style='text-align: left; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h4>", unsafe_allow_html=True)
 
-# Sidebar for selecting category
-category = st.sidebar.radio("Select Category", ["Pre-Award", "Post-Award"])
-
 # File Upload Box
 uploaded_file = st.file_uploader("📎 Upload a document", type=["pdf", "docx", "xlsx", "csv"])
 
@@ -52,7 +49,7 @@ import streamlit as st
 # Load questions
 df = pd.read_csv("sample_questions.csv")
 
-section = st.selectbox("Select a section", ["Pre-Award", "Post-Award"])
+category = st.selectbox("Select a section", ["Pre-Award", "Post-Award"])
 filtered_df = df[df["Section"] == section]
 question = st.selectbox("Choose a question", filtered_df["Question"].tolist())
 
