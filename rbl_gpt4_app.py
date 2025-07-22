@@ -48,8 +48,20 @@ if question:
     st.markdown("### 💬 Answer:")
     st.write(answer)
 
-# Example questions
-st.markdown("### 🧠 Example Questions")
-examples = list(mock_qa[category].keys())
-for ex in examples:
-    st.markdown(f"- {ex}")
+# ✅ Dropdown for sample questions
+with st.expander("🧠 Sample Questions (Click to View)"):
+    question = st.selectbox(
+        "Choose a sample question to test:",
+        [
+            "What internal documents are needed before submitting a Cayuse proposal at Rice?",
+            "How do I route for Chair/Dean approval?",
+            "How do I initiate a Cayuse submission for NIH?",
+            "Where can I see budget burn rate for my award?",
+            "How do I request a no-cost extension in iO?",
+            "What expenses are allowable under federal grants?"
+        ]
+    )
+
+    if st.button("Use This Sample Question"):
+        st.session_state.user_question = question
+        st.success(f"Selected question loaded: {question}")
