@@ -1,19 +1,20 @@
 import streamlit as st
 from PIL import Image
 
-# Set the layout to wide to reduce unnecessary spacing
-st.set_page_config(page_title="Rice RBLgpt", layout="wide")
+# Set the page configuration
+st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
-# Load the logo
+# Load and display the logo centered above the title with adjusted width
 logo = Image.open("RBLgpt logo.png")
 
-# Use columns to align the logo and title horizontally
-col1, col2 = st.columns([1, 6])  # Adjust ratio to fit your layout
-with col1:
-    st.image(logo, width=500)
-with col2:
-    st.markdown("<h1 style='margin-bottom:0;'>Rice RBLgpt</h2>", unsafe_allow_html=True)
-    st.markdown("<h4 style='margin-top:0;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h4>", unsafe_allow_html=True)
+# Display the logo with fixed width and no extra white space
+st.image(logo, width=250)  # Adjust width as needed to match the text
+
+# Tighten the spacing between logo and title
+st.markdown("<h1 style='text-align: center; margin-top: -30px;'>Rice RBLgpt</h1>", unsafe_allow_html=True)
+
+# Subtitle directly below the title
+st.markdown("<h4 style='text-align: center; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h4>", unsafe_allow_html=True)
 
 # Sidebar for selecting category
 category = st.sidebar.selectbox("Select Category", ["Pre-Award", "Post-Award"])
