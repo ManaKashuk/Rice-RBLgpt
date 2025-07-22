@@ -8,10 +8,10 @@ st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 logo = Image.open("RBLgpt logo.png")
 
 # Display the logo with fixed width and no extra white space
-st.image(logo, width=500)  # Adjust width as needed to match the text
+st.image(logo, width=500)
 
 # Tighten the spacing between logo and title
-st.markdown("<h2 style='text-align: left; margin-top: 0px;'>Rice RBLgpt</h1>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: left; margin-top: -1px;'>Rice RBLgpt</h1>", unsafe_allow_html=True)
 
 # Subtitle directly below the title
 st.markdown("<h5 style='text-align: left; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h4>", unsafe_allow_html=True)
