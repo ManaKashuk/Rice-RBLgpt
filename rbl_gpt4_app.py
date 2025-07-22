@@ -20,6 +20,11 @@ category = st.sidebar.radio("Select Category", ["Pre-Award", "Post-Award"])
 
 # Question Input
 question = st.text_input("🔍 Ask Rice RBLgpt a question:")
+# File Upload Box
+uploaded_file = st.file_uploader("📎 Upload a document", type=["pdf", "docx", "xlsx", "csv"])
+
+if uploaded_file:
+    st.success(f"Uploaded file: {uploaded_file.name}")
 
 # Mock Q&A database
 mock_qa = {
