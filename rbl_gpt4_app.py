@@ -1,12 +1,11 @@
-import streamlit as st
+iimport streamlit as st
 from PIL import Image
 import base64
 from io import BytesIO
 
-# App Title and Layout
-st.set_page_config(page_title="Rice RBLgpt", layout="centered")
+st.set_page_config(page_title="Rice RBLgpt", layout="wide")
 
-# Convert local image to base64 string
+# Function to convert image to base64
 def get_base64_image(image_path):
     img = Image.open(image_path)
     buffered = BytesIO()
@@ -14,17 +13,23 @@ def get_base64_image(image_path):
     img_str = base64.b64encode(buffered.getvalue()).decode()
     return img_str
 
-# Load and convert logo
+# Get base64 image
 logo_base64 = get_base64_image("RBLgpt logo.png")
 
-# Display the logo and title side-by-side with reduced spacing
+# Display logo and title with minimal spacing
 st.markdown(
     f"""
-    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-        <img src="data:image/png;base64,{logo_base64}" width="280" style="margin: 0;" />
+    <style>
+    .reportview-container .main .block-container {{
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }}
+    </style>
+    <div style="display: flex; align-items: center; gap: 10px; margin-top: 0px; margin-bottom: 5px;">
+        <img src="data:image/png;base64,{logo_base64}" width="75" style="margin: 0;" />
         <div style="line-height: 1.2;">
-            <h1 style="margin: 0;">Rice RBLgpt</h1>
-            <p style="margin: 2px 0 0 0;">Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</p>
+            <h1 style="margin: 0; font-size: 1.8rem;">Rice RBLgpt</h1>
+            <p style="margin: 0; font-size: 1rem;">Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</p>
         </div>
     </div>
     """,
