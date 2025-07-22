@@ -35,6 +35,12 @@ filtered_df = df[df["Category"] == category]
 user_input = st.text_input("🔍 Ask Rice RBLgpt a question:")
 
 # Suggest matching questions from selected category
+if "suggested_question" not in st.session_state:
+    st.session_state.suggested_question = None
+    st.session_state.suggested_category = None
+    st.session_state.suggested_answer = None
+    st.session_state.awaiting_confirmation = False
+
 if user_input:
     suggestions = filtered_df[filtered_df["Question"].str.contains(user_input, case=False, na=False)]
 
@@ -43,19 +49,34 @@ if user_input:
         for idx, row in suggestions.iterrows():
             if st.button(row["Question"]):
                 st.markdown(f"**Answer:** {row['Answer']}")
-    else:
-        # No matches in selected category — try to suggest best overall match
+    elif not st.session_state.awaiting_confirmation:
+        # No match, find closest match from all categories
+        from difflib import get_close_matches
+
         all_questions = df["Question"].tolist()
-        closest_matches = get_close_matches(user_input, all_questions, n=1, cutoff=0.6)  # Higher cutoff = more confident
+        closest_matches = get_close_matches(user_input, all_questions, n=1, cutoff=0.6)
 
         if closest_matches:
             best_match = closest_matches[0]
             matched_row = df[df["Question"] == best_match].iloc[0]
-            matched_category = matched_row["Category"]
-            matched_answer = matched_row["Answer"]
 
-            st.markdown(f"**Note:** Your question seems related to the **{matched_category}** category.")
-            st.markdown(f"**Suggested Question:** {best_match}")
-            st.markdown(f"**Answer:** {matched_answer}")
+            # Store suggestion
+            st.session_state.suggested_question = best_match
+            st.session_state.suggested_category = matched_row["Category"]
+            st.session_state.suggested_answer = matched_row["Answer"]
+            st.session_state.awaiting_confirmation = True
+
+            st.markdown(f"🤔 Your question may belong to the **{st.session_state.suggested_category}** category.")
+            st.markdown(f"Did you mean:\n> **{st.session_state.suggested_question}**")
+
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("✅ Yes"):
+                    st.markdown(f"**Answer:** {st.session_state.suggested_answer}")
+                    st.session_state.awaiting_confirmation = False
+            with col2:
+                if st.button("❌ No"):
+                    st.info("Okay, please try rephrasing your question.")
+                    st.session_state.awaiting_confirmation = False
         else:
             st.info("No similar questions found. Please try rephrasing.")
