@@ -113,9 +113,4 @@ if st.session_state.submitted and user_input:
                         st.info("Okay, feel free to rephrase your question.")
                         st.session_state.awaiting_confirmation = False
                         st.session_state.typed_question = ""
-        else:
-            with st.chat_message("assistant"):
-                st.info("Sorry, I couldn't find a related question. Please try rephrasing.")
-            st.session_state.messages.append({
-                "role": "assistant", "content": "Sorry, I couldn't find a related question. Please try rephrasing."
             
