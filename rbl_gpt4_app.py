@@ -119,3 +119,4 @@ if st.session_state.submitted and user_input:
             st.session_state.messages.append({
                 "role": "assistant", "content": "Sorry, I couldn't find a related question. Please try rephrasing."
             })
+            
