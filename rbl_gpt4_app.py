@@ -1,11 +1,16 @@
-import pandas as pd
 import streamlit as st
+import pandas as pd
+from PIL import Image
 from difflib import get_close_matches
+from datetime import datetime
+import os
+
 # ---------- Config & Logo ----------
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
-# Display the logo
-logo = Image.open("RBLgpt_logo.png")
+# Load and display the logo
+logo_path = os.path.join(os.path.dirname(__file__), "RBLgpt logo.png")
+logo = Image.open(logo_path)
 st.image(logo, width=100)
 
 # Title and subtitle
@@ -13,14 +18,6 @@ st.markdown("<h2 style='text-align: left; margin-top: -20px;'>Rice RBLgpt</h2>",
 st.markdown("<h5 style='text-align: left; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h5>", unsafe_allow_html=True)
 st.markdown("🧠 _RBLgpt is trained to respond like a Rice Biotech LaunchPad Research Admin based on SOP guidance._")
 
-# File uploader
-uploaded_file = st.file_uploader("📎 Upload a document", type=["pdf", "docx", "xlsx", "csv"])
-if uploaded_file:
-    st.success(f"Uploaded file: {uploaded_file.name}")
-# Download chat history
-if st.session_state.messages:
-    chat_text = "\n\n".join(f"{'You' if m['role']=='user' else 'Rice RBLgpt'}: {m['content']}" for m in st.session_state.messages)
-    st.download_button("📥 Download Chat History", data=chat_text, file_name="rblgpt_chat_history.txt", mime="text/plain")
 # ---------- Load CSV ----------
 df = pd.read_csv("sample_questions.csv")
 
@@ -130,4 +127,3 @@ if st.session_state.chat_history:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"chat_history_{timestamp}.txt"
     st.download_button("Download Chat History", chat_text, file_name=filename)
-    
