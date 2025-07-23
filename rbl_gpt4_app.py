@@ -1,6 +1,5 @@
 import streamlit as st
 st.write(st.__version__)
-pip install --upgrade streamlit
 import pandas as pd
 from difflib import get_close_matches
 from PIL import Image
