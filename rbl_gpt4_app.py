@@ -129,7 +129,6 @@ if st.session_state.chat_history:
         role = "User" if msg["role"] == "user" else "Assistant"
         chat_lines.append(f"{role}: {msg['content']}")
     chat_text = "\n\n".join(chat_lines)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"chat_history_{timestamp}.txt"
     st.download_button("Download Chat History", chat_text, file_name=filename)
 
