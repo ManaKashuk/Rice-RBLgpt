@@ -3,12 +3,20 @@ from PIL import Image
 import pandas as pd
 from difflib import get_close_matches
 
-# Set the page configuration
-st.set_page_config(page_title="Rice RBLgpt", layout="centered")
+# ✅ Set Streamlit page configuration
+st.set_page_config(
+    page_title="Rice RBLgpt",       # Appears in browser tab
+    page_icon="🤖",                 # Emoji or emoji image as favicon
+    layout="centered",              # Options: "centered", "wide"
+    initial_sidebar_state="auto"   # Optional: "auto", "expanded", "collapsed"
+)
 
-# Display the logo
-logo = Image.open("RBLgpt_logo.png")
-st.image(logo, width=100)
+# Safe logo display
+try:
+    logo = Image.open("RBLgpt_logo.png")
+    st.image(logo, width=100)
+except FileNotFoundError:
+    st.warning("⚠️ Logo file not found. Please make sure 'RBLgpt_logo.png' is in the same folder.")
 
 # Title and subtitle
 st.markdown("<h2 style='text-align: left; margin-top: -20px;'>Rice RBLgpt</h2>", unsafe_allow_html=True)
@@ -22,8 +30,12 @@ uploaded_file = st.file_uploader("📎 Upload a document", type=["pdf", "docx", 
 if uploaded_file:
     st.success(f"Uploaded file: {uploaded_file.name}")
 
-# Load question/answer data
-df = pd.read_csv("sample_questions.csv")
+# Safe CSV loading
+try:
+    df = pd.read_csv("sample_questions.csv")
+except FileNotFoundError:
+    st.error("❌ 'sample_questions.csv' not found. Please upload the file or check its path.")
+    st.stop()
 
 # Initialize session state
 for key in ["messages", "suggested_question", "suggested_category", "suggested_answer", "awaiting_confirmation", "submitted", "typed_question"]:
