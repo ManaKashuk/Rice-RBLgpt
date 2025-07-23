@@ -1,8 +1,6 @@
 import streamlit as st
 from PIL import Image
 import pandas as pd
-st.write("✅ pandas is installed. Version:", pd.__version__)
-
 from difflib import get_close_matches
 
 # --- Page Setup ---
