@@ -49,6 +49,21 @@ if selected_suggestion:
 # Input box for custom question
 question = st.text_input("Your question:", value=st.session_state.typed_question)
 submit = st.button("Submit")
+# ---------- Session Setup ----------
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+if "awaiting_confirmation" not in st.session_state:
+    st.session_state.awaiting_confirmation = False
+if "suggested_q" not in st.session_state:
+    st.session_state.suggested_q = ""
+if "suggested_ans" not in st.session_state:
+    st.session_state.suggested_ans = ""
+if "suggested_cat" not in st.session_state:
+    st.session_state.suggested_cat = ""
+if "typed_question" not in st.session_state:
+    st.session_state.typed_question = ""
+if "trigger_rerun" not in st.session_state:
+    st.session_state.trigger_rerun = False
 if st.session_state.trigger_rerun:
     st.session_state.trigger_rerun = False
     st.experimental_rerun()
