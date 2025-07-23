@@ -9,7 +9,6 @@ import os
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
 # Load and display the logo
-logo_path = os.path.join(os.path.dirname(__file__), "RBLgpt logo.png")
 logo = Image.open(logo_path)
 st.image(logo, width=100)
 
