@@ -119,12 +119,3 @@ if st.session_state.submitted and user_input:
             st.session_state.messages.append({
                 "role": "assistant", "content": "Sorry, I couldn't find a related question. Please try rephrasing."
             })
-
-# Autocomplete suggestions
-if st.session_state.typed_question:
-    matches = filtered_df[filtered_df["Question"].str.contains(st.session_state.typed_question, case=False, na=False)]
-    if not matches.empty:
-        st.markdown("**🔎 Suggestions:**")
-        for i, q in enumerate(matches["Question"].head(5)):
-            if st.button(q, key=f"suggestion_btn_{i}"):
-                st.session_state.typed_question = q
