@@ -1,0 +1,71 @@
+Category,Question,Answer
+Pre-Award,What internal documents are needed before submitting a Cayuse proposal at Rice?,"Internal documents typically include the proposal routing form, budget justification, cost-share approval (if applicable), and biosketches."
+Pre-Award,How do I route for Chair/Dean approval?,"Log in to Cayuse, attach your documents, then select your department and college. Routing will automatically forward for approvals."
+Pre-Award,How do I initiate a Cayuse submission for NIH?,"Start a new Cayuse proposal, select NIH as sponsor, attach SF424 forms, and follow Rice's internal checklist."
+Pre-Award,What are F&A rates for federal biotech grants?,Rice's federal F&A rate for research is 58% MTDC (as of FY2025). Always check with OSP for sponsor-specific exceptions.
+Pre-Award,Who can help me troubleshoot Cayuse errors?,Contact the Office of Sponsored Projects (OSP) or your department research admin for real-time Cayuse support.
+Pre-Award,How do I revise a Cayuse proposal after routing has started?,"You must recall the proposal, make edits, and reinitiate routing. Notify approvers of the change."
+Pre-Award,Can I submit a proposal without finalized budget?,No. A finalized and approved budget is required before submission to ensure compliance and institutional approval.
+Pre-Award,What is the deadline for internal routing before sponsor deadline?,Rice requires internal routing to be completed at least 5 business days before the sponsor deadline.
+Pre-Award,How do I add a subaward to my Cayuse proposal?,"Include the subrecipient's statement of work, budget, budget justification, and commitment letter in the attachments."
+Pre-Award,What is the difference between Cayuse SP and Cayuse 424?,Cayuse SP is for internal routing and approvals; Cayuse 424 is used for federal submissions like NIH.
+Pre-Award,What is the difference between a continuation request and a resubmission at Rice?,"A continuation request at Rice refers to a non-competing renewal for ongoing funding within the current award period, typically requiring a progress report and updated budget. A resubmission is a revised proposal submitted after a prior rejection, often with changes based on reviewer feedback. It is treated as a new application, even if the project is similar."
+Pre-Award,How long after initial review can a resubmission be submitted?,"At Rice, resubmissions must typically occur within 24 months of the initial review to remain relevant and responsive to prior feedback. This aligns with NIH and NSF timelines and ensures the proposal reflects current priorities."
+Pre-Award,What types of proposals are most common at Rice Biotech Launch Pad?,"Common proposal types include Research, Career Development, SBIR/STTR, Education and Outreach, and Conference/Event. “Innovation” is a goal, not a formal proposal type."
+Pre-Award,Where should Rice investigators disclose exceptions or special circumstances in a proposal?,"In the Cover Letter. This document is used to communicate administrative details, such as deviations from standard guidelines, eligibility concerns, or special review requests."
+Pre-Award,What are the NSF's two major review criteria that Rice investigators must address?,"Intellectual Merit and Broader Impacts. Intellectual Merit assesses the potential to advance knowledge, while Broader Impacts evaluate societal benefits. These must be addressed in the Project Summary, Description, and Prior Support sections."
+Pre-Award,What is the purpose of a Letter of Intent (LOI) in Rice proposal submissions?,"An LOI helps sponsors plan for review workloads and identify conflicts of interest. It is often required before full proposal submission, especially for NIH and NSF mechanisms."
+Pre-Award,What is a common mistake that could cause a Rice proposal to be rejected?,"Submitting within five minutes of the deadline. Electronic systems may fail under high traffic, and late submissions are often automatically rejected."
+Pre-Award,What should a Management/Leadership Plan include for multi-PI proposals at Rice?,"It should define roles, responsibilities, administrative structure, and conflict resolution strategies to ensure smooth collaboration and accountability."
+Pre-Award,Who should Rice investigators contact to confirm alignment with a funding opportunity?,"The Program Officer listed in the FOA. They can clarify scope, expectations, and fit with sponsor priorities."
+Pre-Award,Should confidential information be included in the Summary section of a Rice proposal?,"No. The Summary may be made public if funded, so it must exclude proprietary or sensitive information."
+Pre-Award,What is the intent of a budget justification at Rice?,"To provide an itemized rationale for each cost, demonstrating that expenses are reasonable, allocable, and allowable under sponsor guidelines."
+Pre-Award,What should be excluded from the Summary section of a Rice research proposal?,"Confidential information, as the Summary is often publicly accessible."
+Pre-Award,What is the most effective way a Rice Research Administrator can help identify funding?,By reviewing sponsor priorities and encouraging the PI to contact the Program Officer for strategic guidance.
+Pre-Award,Can proposals be rejected if they don't align with sponsor priorities?,Yes. Misalignment with sponsor mission or FOA goals is a common reason for rejection.
+Pre-Award,What is a key element of a Management Plan for Rice proposals?,Conflict resolution strategies to manage disagreements among collaborators.
+Pre-Award,Do Career Development proposals at Rice include R or T series grants?,"No. They typically include K series and Fellowship proposals, not R (research) or T (training) series."
+Pre-Award,What document must be reviewed before advising a Rice PI on a new submission?,"The solicitation. It contains deadlines, formatting, budget limits, and review criteria."
+Pre-Award,What type of proposal should a Rice PI submit to continue a funded project?,"A Competitive Renewal, which requests continued funding and is reviewed like a new proposal."
+Pre-Award,What defines human research under Ric's compliance standards?,"Any research involving observation, intervention, human samples, or identifiable human data."
+Pre-Award,What is the most common error in Rice proposal preparation?,"Not complying with the solicitation requirements, such as formatting, page limits, or required documents."
+Post-Award,Where can I see budget burn rate for my award?,Go to iO Award Summary > Budget vs. Actuals tab. This shows your current spend vs. total budget.
+Post-Award,How do I request a no-cost extension in iO?,"Submit a request in iO with justification, revised timeline, and approvals. RCA will route it for compliance and sponsor approval."
+Post-Award,What expenses are allowable under federal grants?,"Follow OMB Uniform Guidance. Allowable costs include personnel, travel, supplies. Alcohol and administrative salaries are typically excluded."
+Post-Award,How do I initiate award closeout?,"Begin 90 days before the award ends. Finalize all charges, submit final reports, and review with RCA."
+Post-Award,Who submits the final scientific and invention reports?,The PI is responsible for submitting technical reports. RCA handles financial closeout and sponsor notifications.
+Post-Award,How is cost sharing tracked and reported?,Department admins track cost share in iO; RCA verifies and includes in closeout.
+Post-Award,What is the process for cost transfers or overspending?,RCA coordinates cost transfers. Overspending is moved to cost-share or department funds.
+Post-Award,How do I view encumbrances in iO?,Navigate to the Award Budget tab and select 'Encumbrances' to view pending commitments.
+Post-Award,Can I rebudget funds between categories?,"Yes, within sponsor guidelines. Submit a rebudget request in iO and obtain RCA approval."
+Post-Award,How do I request additional funding from the sponsor?,Submit a supplemental funding request through iO with justification and updated budget.
+Compliance,Do I need IRB approval before submitting a human subjects proposal?,Yes. IRB approval or exemption must be obtained before submission or release of funds.
+Compliance,How do I submit a conflict of interest disclosure?,Log into COI module in Cayuse and complete the annual disclosure form.
+Compliance,What training is required for animal research?,Complete IACUC training and protocol approval before initiating animal research.
+Compliance,How do I report a research compliance concern?,Contact the Office of Research Integrity or use the anonymous reporting hotline.
+Compliance,What is the export control review process?,OSP and Research Compliance review proposals for export control risks. Complete the export control questionnaire in Cayuse.
+Compliance,When is a data use agreement required?,"When sharing or receiving non-public data, especially human subject data. Contact OSP for review."
+Compliance,How do I submit an IACUC protocol?,Use the Cayuse IACUC module to create and submit your protocol for committee review.
+Compliance,What is the process for biosafety review?,Submit your protocol to the Institutional Biosafety Committee (IBC) via the Cayuse system.
+Compliance,How often must I renew IRB protocols?,Protocols must be renewed annually or as specified by the IRB approval letter.
+Compliance,Who reviews foreign collaborations for compliance?,The Office of Research Compliance reviews international collaborations for export control and disclosure requirements.
+System Navigation,How do I get access to Cayuse?,Submit an access request through the OIT Help Desk or contact your department administrator.
+System Navigation,How do I reset my iO password?,"Use the Rice single sign-on portal to reset your NetID password, which is used for iO."
+System Navigation,Where can I find training for Cayuse and iO?,Rice offers training through the Office of Sponsored Projects and online modules on the Research website.
+System Navigation,How do I search for a submitted proposal in Cayuse?,"Use the Proposal Search tab and filter by PI, sponsor, or date."
+System Navigation,Can I delegate proposal access to another user?,Yes. Use the 'Access' tab in Cayuse to add collaborators or department admins.
+System Navigation,How do I update my profile in Cayuse?,Click on your name in the top right corner and select 'My Profile' to update contact info and affiliations.
+System Navigation,What browser works best with Cayuse and iO?,Use Chrome or Firefox for optimal performance. Avoid Internet Explorer.
+System Navigation,How do I view award documents in iO?,Navigate to the Award record and click on the 'Attachments' tab to view uploaded documents.
+System Navigation,How do I track proposal status in Cayuse?,Check the routing status bar or view the proposal history for updates.
+System Navigation,Can I export budget reports from iO?,Yes. Use the 'Export' button in the Budget tab to download reports in Excel format.
+Clinical/Translational Research,What is the Rice Biotech Launch Pad?,It is Rice's translational research accelerator supporting biotech innovations from lab to clinic.
+Clinical/Translational Research,How do I submit a clinical trial budget for review?,Submit your draft budget to the Clinical Research Office for feasibility and compliance review.
+Clinical/Translational Research,What is the process for IND/IDE support?,Contact the Biotech Launch Pad regulatory team for guidance on FDA submissions.
+Clinical/Translational Research,How do I register a clinical trial?,Use ClinicalTrials.gov and coordinate with the Clinical Research Office for registration and updates.
+Clinical/Translational Research,Who reviews clinical trial agreements?,OSP reviews and negotiates clinical trial agreements in coordination with legal counsel.
+Clinical/Translational Research,What is required for Good Clinical Practice (GCP) training?,All clinical research staff must complete GCP training through CITI or equivalent.
+Clinical/Translational Research,How do I track patient enrollment in iO?,Use the Clinical Research module in iO to log and monitor subject enrollment.
+Clinical/Translational Research,Can I use Cayuse for FDA-regulated studies?,Yes. Cayuse supports routing and compliance documentation for FDA-regulated research.
+Clinical/Translational Research,How do I budget for clinical monitoring?,Include monitoring costs in your proposal budget and justify based on study complexity.
+Clinical/Translational Research,What is the process for IRB reliance agreements?,Submit a reliance request to the IRB office. Rice may rely on external IRBs under SMART IRB or other agreements.
