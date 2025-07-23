@@ -122,7 +122,6 @@ if st.button("💬 Submit") and user_input.strip():
                 "content": "Sorry, I couldn't find a related question. Please try rephrasing."
             })
 
-
 # Optional: autocomplete suggestions while typing
 if st.session_state.typed_question:
     matches = filtered_df[filtered_df["Question"].str.contains(st.session_state.typed_question, case=False, na=False)]
@@ -131,4 +130,3 @@ if st.session_state.typed_question:
         for i, q in enumerate(matches["Question"].head(5)):
             if st.button(q, key=f"suggestion_btn_{i}"):
                 st.session_state.typed_question = q # ❌ THIS LINE CAUSES CRASH
-
