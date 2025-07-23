@@ -49,6 +49,9 @@ if selected_suggestion:
 # Input box for custom question
 question = st.text_input("Your question:", value=st.session_state.typed_question)
 submit = st.button("Submit")
+if st.session_state.trigger_rerun:
+    st.session_state.trigger_rerun = False
+    st.experimental_rerun()
 
 # ---------- Step 3: Process the Question ----------
 if submit and question.strip():
