@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 from difflib import get_close_matches
@@ -105,27 +106,12 @@ if st.session_state.awaiting_confirmation:
 
 # ---------- Step 5: File Upload ----------
 st.divider()
-st.markdown("📎 **Upload Reference Files**")
-uploaded_files = st.file_uploader("Upload files (PDF, DOCX, XLSX, CSV, TXT):", type=["pdf", "docx", "xlsx", "csv", "txt"], accept_multiple_files=True)
-if uploaded_files:
-    for file in uploaded_files:
-        st.success(f"Uploaded: {file.name}")
+st.markdown("📎 **Upload a document**")
+uploaded_file = st.file_uploader("Upload a document", type=["pdf", "docx", "xlsx", "csv"])
+if uploaded_file:
+    st.success(f"Uploaded file: {uploaded_file.name}")
 
-# ---------- Step 6: Show Chat History ----------
-st.divider()
-st.markdown("🗂 **Chat History**")
-for msg in st.session_state.chat_history:
-    with st.chat_message(msg["role"]):
-        if msg["role"] == "assistant":
-            col1, col2 = st.columns([1, 10])
-            with col1:
-                st.image(logo, width=40)
-            with col2:
-                st.markdown(f"**Answer:** {msg['content']}")
-        else:
-            st.markdown(msg["content"])
-
-# ---------- Step 7: Download Chat History ----------
+# ---------- Step 6: Download Chat History ----------
 st.divider()
 st.markdown("📥 **Download Chat History**")
 if st.session_state.chat_history:
@@ -137,3 +123,4 @@ if st.session_state.chat_history:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"chat_history_{timestamp}.txt"
     st.download_button("Download Chat History", chat_text, file_name=filename)
+    
