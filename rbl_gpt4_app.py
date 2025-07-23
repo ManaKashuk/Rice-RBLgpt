@@ -109,7 +109,7 @@ if st.session_state.awaiting_confirmation:
 
 # ---------- Step 5: Show Chat History ----------
 st.divider()
-st.markdown("🗂 **Chat History**")
+st.markdown("💻 **Chat History**")
 for msg in st.session_state.chat_history:
     with st.chat_message(msg["role"]):
         if msg["role"] == "assistant":
