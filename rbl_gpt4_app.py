@@ -8,12 +8,13 @@ from datetime import datetime
 # ---------- Config & Logo ----------
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
+# Display the logo
 logo = Image.open("RBLgpt logo.png")
 st.image(logo, width=100)
-st.markdown("<h1>Rice RBLgpt</h1>", unsafe_allow_html=True)
-st.markdown("_Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad_")
-st.markdown("🧠 _RBLgpt is trained to respond like a Rice Biotech LaunchPad Research Admin based on SOP guidance._")
 
+# Title and subtitle
+st.markdown("<h2 style='text-align: left; margin-top: -20px;'>Rice RBLgpt</h2>", unsafe_allow_html=True)
+st.markdown("<h5 style='text-align: left; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h5>", unsafe_allow_html=True)
 # ---------- Load CSV ----------
 df = pd.read_csv("sample_questions.csv")
 
