@@ -1,18 +1,17 @@
-
 import streamlit as st
 from PIL import Image
 import pandas as pd
 from difflib import get_close_matches
 
 # Set the page configuration
-st.set_page_config(page_title="Rice RBLgpt", layout="centered")
+st.set_page_config(page_title="Rice RBLPgpt", layout="centered")
 
 # Display the logo
 logo = Image.open("RBLgpt logo.png")
 st.image(logo, width=100)
 
 # Title and subtitle
-st.markdown("<h2 style='text-align: left; margin-top: -20px;'>Rice RBLgpt</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: left; margin-top: -20px;'>Rice RBLPgpt</h2>", unsafe_allow_html=True)
 st.markdown("<h5 style='text-align: left; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h5>", unsafe_allow_html=True)
 
 # Role priming banner
@@ -86,47 +85,46 @@ if st.session_state.submitted and user_input:
             st.markdown(f"**Answer:** {answer}")
         st.session_state.messages.append({"role": "assistant", "content": f"**Answer:** {answer}"})
         st.session_state.awaiting_confirmation = False
-# No exact match — suggest closest question from selected category
-elif not st.session_state.awaiting_confirmation:
-    # Only look for similar questions within the selected category
-    category_questions = filtered_df["Question"].tolist()
-    close_matches = get_close_matches(user_input, category_questions, n=1, cutoff=0.6)
 
-    if close_matches:
-        best_match = close_matches[0]
-        matched_row = filtered_df[filtered_df["Question"] == best_match].iloc[0]
-
-        st.session_state.suggested_question = best_match
-        st.session_state.suggested_category = matched_row["Category"]
-        st.session_state.suggested_answer = matched_row["Answer"]
-        st.session_state.awaiting_confirmation = True
-
-        with st.chat_message("assistant"):
-            st.markdown(f"🤔 I couldn’t find an exact match, but this may help:")
-            st.markdown(f"Did you mean:\n> **{best_match}**")
-
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("✅ Yes, show answer", key="confirm_yes"):
-                    with st.chat_message("assistant"):
-                        st.markdown(f"**Answer:** {st.session_state.suggested_answer}")
-                    st.session_state.messages.append({
-                        "role": "assistant",
-                        "content": f"**Answer:** {st.session_state.suggested_answer}"
-                    })
-                    st.session_state.awaiting_confirmation = False
-                    st.session_state.typed_question = ""
-            with col2:
-                if st.button("❌ No, try again", key="confirm_no"):
-                    with st.chat_message("assistant"):
-                        st.info("Okay, feel free to rephrase your question.")
-                    st.session_state.awaiting_confirmation = False
-                    st.session_state.typed_question = ""
     else:
-        with st.chat_message("assistant"):
-            st.info(f"Sorry, this question doesn’t match any known questions in **{category}**. Please rephrase or try a different category.")
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": f"Sorry, this question doesn’t match any known questions in **{category}**. Please rephrase or try a different category."
-        })
+        # Only look for similar questions within the selected category
+        category_questions = filtered_df["Question"].tolist()
+        close_matches = get_close_matches(question, category_questions, n=1, cutoff=0.6)
 
+        if close_matches:
+            best_match = close_matches[0]
+            matched_row = filtered_df[filtered_df["Question"] == best_match].iloc[0]
+
+            st.session_state.suggested_question = best_match
+            st.session_state.suggested_category = matched_row["Category"]
+            st.session_state.suggested_answer = matched_row["Answer"]
+            st.session_state.awaiting_confirmation = True
+
+            with st.chat_message("assistant"):
+                st.markdown(f"🤔 I couldn’t find an exact match, but this may help:")
+                st.markdown(f"Did you mean:\n> **{best_match}**")
+
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("✅ Yes, show answer", key="confirm_yes"):
+                        with st.chat_message("assistant"):
+                            st.markdown(f"**Answer:** {st.session_state.suggested_answer}")
+                        st.session_state.messages.append({
+                            "role": "assistant",
+                            "content": f"**Answer:** {st.session_state.suggested_answer}"
+                        })
+                        st.session_state.awaiting_confirmation = False
+                        st.session_state.typed_question = ""
+                with col2:
+                    if st.button("❌ No, try again", key="confirm_no"):
+                        with st.chat_message("assistant"):
+                            st.info("Okay, feel free to rephrase your question.")
+                        st.session_state.awaiting_confirmation = False
+                        st.session_state.typed_question = ""
+        else:
+            with st.chat_message("assistant"):
+                st.info(f"Sorry, this question doesn’t match any known questions in **{category}**. Please rephrase or try a different category.")
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": f"Sorry, this question doesn’t match any known questions in **{category}**. Please rephrase or try a different category."
+            })
