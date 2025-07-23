@@ -133,7 +133,3 @@ for msg in st.session_state.chat_history:
                 st.markdown(f"**Answer:** {msg['content']}")
         else:
             st.markdown(msg["content"])
-    filename = f"chat_history_{timestamp}.txt"
-    st.download_button("Download Chat History", chat_text, file_name=filename)
-
-
