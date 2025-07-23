@@ -1,5 +1,9 @@
 import streamlit as st
-st.write(st.__version__)
+
+st.set_page_config(page_title="Rice RBLgpt", layout="centered")
+
+# Now continue with the rest of your imports and code
+
 import pandas as pd
 from difflib import get_close_matches
 from PIL import Image
