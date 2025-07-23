@@ -16,18 +16,22 @@ st.markdown("🧠 _RBLgpt is trained to respond like a Rice research admin based
 df = pd.read_csv("sample_questions.csv")
 
 # ---------- Session Setup ----------
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-if "awaiting_confirmation" not in st.session_state:
-    st.session_state.awaiting_confirmation = False
-if "suggested_q" not in st.session_state:
-    st.session_state.suggested_q = ""
-if "suggested_ans" not in st.session_state:
-    st.session_state.suggested_ans = ""
-if "suggested_cat" not in st.session_state:
-    st.session_state.suggested_cat = ""
-if "typed_question" not in st.session_state:
-    st.session_state.typed_question = ""
+for key, default in {
+    "chat_history": [],
+    "awaiting_confirmation": False,
+    "suggested_q": "",
+    "suggested_ans": "",
+    "suggested_cat": "",
+    "typed_question": "",
+    "trigger_rerun": False,
+}.items():
+    if key not in st.session_state:
+        st.session_state[key] = default
+
+# ---------- Safe Rerun Trigger ----------
+if st.session_state.trigger_rerun:
+    st.session_state.trigger_rerun = False
+    st.experimental_rerun()
 
 # ---------- Step 1: Category Selection ----------
 category = st.selectbox("📂 Select a category:", df["Category"].unique())
@@ -35,7 +39,6 @@ filtered_df = df[df["Category"] == category]
 category_questions = filtered_df["Question"].tolist()
 
 # ---------- Step 2: Ask a Question ----------
-# Show autocomplete dropdown as suggestions
 st.markdown("💬 **Type your question** (or select from suggestions):")
 
 selected_suggestion = st.selectbox(
@@ -44,41 +47,20 @@ selected_suggestion = st.selectbox(
 
 if selected_suggestion:
     st.session_state.typed_question = selected_suggestion
-    st.experimental_rerun()
+    st.session_state.trigger_rerun = True
 
-# Input box for custom question
 question = st.text_input("Your question:", value=st.session_state.typed_question)
 submit = st.button("Submit")
-# ---------- Session Setup ----------
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-if "awaiting_confirmation" not in st.session_state:
-    st.session_state.awaiting_confirmation = False
-if "suggested_q" not in st.session_state:
-    st.session_state.suggested_q = ""
-if "suggested_ans" not in st.session_state:
-    st.session_state.suggested_ans = ""
-if "suggested_cat" not in st.session_state:
-    st.session_state.suggested_cat = ""
-if "typed_question" not in st.session_state:
-    st.session_state.typed_question = ""
-if "trigger_rerun" not in st.session_state:
-    st.session_state.trigger_rerun = False
-if st.session_state.trigger_rerun:
-    st.session_state.trigger_rerun = False
-    st.experimental_rerun()
 
 # ---------- Step 3: Process the Question ----------
 if submit and question.strip():
     question = question.strip()
-    st.session_state.typed_question = ""  # Clear for next round
+    st.session_state.typed_question = ""
 
-    # Show user's message
     st.session_state.chat_history.append({"role": "user", "content": question})
     with st.chat_message("user"):
         st.markdown(question)
 
-    # Check exact match in selected category
     match_row = filtered_df[filtered_df["Question"].str.lower() == question.lower()]
     if not match_row.empty:
         answer = match_row.iloc[0]["Answer"]
@@ -89,8 +71,6 @@ if submit and question.strip():
             with col2:
                 st.markdown(f"**Answer:** {answer}")
         st.session_state.chat_history.append({"role": "assistant", "content": answer})
-
-    # If no exact match, try close match from ALL categories
     else:
         all_questions = df["Question"].tolist()
         close_matches = get_close_matches(question, all_questions, n=1, cutoff=0.6)
@@ -102,7 +82,6 @@ if submit and question.strip():
             st.session_state.suggested_ans = match["Answer"]
             st.session_state.suggested_cat = match["Category"]
             st.session_state.awaiting_confirmation = True
-
         else:
             with st.chat_message("assistant"):
                 st.info("❌ Sorry, I couldn't find a similar question. Please rephrase.")
