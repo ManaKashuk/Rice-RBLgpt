@@ -4,7 +4,7 @@ import pandas as pd
 from difflib import get_close_matches
 
 # Set the page configuration
-st.set_page_config(page_title="Rice RBLPgpt", layout="centered")
+st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
 # Display the logo
 logo = Image.open("RBLgpt logo.png")
