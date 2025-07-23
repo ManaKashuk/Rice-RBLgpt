@@ -55,12 +55,19 @@ if not st.session_state.typed_question:
         st.markdown(f"- {q}")
 
 # Suggested questions as buttons
-with st.expander("💡 Suggested questions from this category", expanded=False):
-    for i, question in enumerate(filtered_df["Question"].tolist()):
-        if st.button(question, key=f"cat_btn_{i}"):
-            answer = filtered_df.loc[filtered_df["Question"] == question, "Answer"].values[0]
-            show_answer_with_logo(answer)
-            st.session_state.messages.append({"role": "assistant", "content": f"**Answer:** {answer}"})
+st.markdown("💡 **Suggested Questions (click to autofill)**")
+
+selected_question = st.selectbox(
+    "Choose a suggested question from this category:",
+    options=[""] + filtered_df["Question"].tolist(),
+    index=0,
+    key="suggested_question_select"
+)
+
+# When user selects a question, autofill the input box
+if selected_question and selected_question != "":
+    st.session_state.typed_question = selected_question
+    st.experimental_rerun()  # reload with the selected question in the input
 
 # Display chat history
 for msg in st.session_state.messages:
@@ -73,8 +80,11 @@ for msg in st.session_state.messages:
             show_answer_with_logo(msg["content"].replace("**Answer:** ", ""))
 
 # Text input for user's question
-user_input = st.text_input("Ask your question...", value=st.session_state.get("suggested_fill", ""), key="typed_question")
-st.session_state.suggested_fill = ""  # Reset suggestion after it fills the input
+user_input = st.text_input(
+    "Ask your question...",
+    value=st.session_state.get("typed_question", ""),
+    key="typed_question_input"
+)
 
 # Submit button
 if st.button("💬 Submit") and user_input.strip():
