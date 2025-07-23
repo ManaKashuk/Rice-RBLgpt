@@ -2,15 +2,16 @@ import streamlit as st
 import pandas as pd
 from difflib import get_close_matches
 from PIL import Image
+from datetime import datetime
 
 # ---------- Config & Logo ----------
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
 logo = Image.open("RBLgpt logo.png")
 st.image(logo, width=100)
-st.markdown("<h2>Rice RBLgpt</h2>", unsafe_allow_html=True)
+st.markdown("<h1>Rice RBLgpt</h1>", unsafe_allow_html=True)
 st.markdown("_Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad_")
-st.markdown("🧠 _RBLgpt is trained to respond like a Rice research admin based on SOP guidance._")
+st.markdown("🧠 _RBLgpt is trained to respond like a Rice Biotech LaunchPad Research Admin based on SOP guidance._")
 
 # ---------- Load CSV ----------
 df = pd.read_csv("sample_questions.csv")
@@ -23,29 +24,24 @@ for key, default in {
     "suggested_ans": "",
     "suggested_cat": "",
     "typed_question": "",
-    "trigger_rerun": False,
 }.items():
     if key not in st.session_state:
         st.session_state[key] = default
 
-# ---------- Safe Rerun Trigger ----------
-if st.session_state.trigger_rerun:
-    st.session_state.trigger_rerun = False
-    
 # ---------- Step 1: Category Selection ----------
 category = st.selectbox("📂 Select a category:", df["Category"].unique())
 filtered_df = df[df["Category"] == category]
 category_questions = filtered_df["Question"].tolist()
 
 # ---------- Step 2: Ask a Question ----------
-st.markdown("💬 **Type your question** (or select from suggestions):")
+st.markdown("💬 **Type your question** (suggestions will appear as you type):")
 
-# Combine dropdown and input without rerun
-col1, col2 = st.columns([2, 5])
-with col1:
-    selected_suggestion = st.selectbox("Suggestions:", [""] + category_questions, key="dropdown_suggest")
-with col2:
-    question = st.text_input("Your question:", value=selected_suggestion if selected_suggestion else st.session_state.typed_question, key="typed_input")
+question = st.autocomplete(
+    label="Your question:",
+    options=category_questions,
+    value=st.session_state.typed_question,
+    key="typed_input"
+)
 
 submit = st.button("Submit")
 
@@ -107,9 +103,17 @@ if st.session_state.awaiting_confirmation:
                 st.session_state.suggested_q = ""
                 st.session_state.suggested_ans = ""
 
-# ---------- Step 5: Show Chat History ----------
+# ---------- Step 5: File Upload ----------
 st.divider()
-st.markdown("💻 **Chat History**")
+st.markdown("📎 **Upload Reference Files**")
+uploaded_files = st.file_uploader("Upload files (PDF, DOCX, XLSX, CSV, TXT):", type=["pdf", "docx", "xlsx", "csv", "txt"], accept_multiple_files=True)
+if uploaded_files:
+    for file in uploaded_files:
+        st.success(f"Uploaded: {file.name}")
+
+# ---------- Step 6: Show Chat History ----------
+st.divider()
+st.markdown("🗂 **Chat History**")
 for msg in st.session_state.chat_history:
     with st.chat_message(msg["role"]):
         if msg["role"] == "assistant":
@@ -120,3 +124,16 @@ for msg in st.session_state.chat_history:
                 st.markdown(f"**Answer:** {msg['content']}")
         else:
             st.markdown(msg["content"])
+
+# ---------- Step 7: Download Chat History ----------
+st.divider()
+st.markdown("📥 **Download Chat History**")
+if st.session_state.chat_history:
+    chat_lines = []
+    for msg in st.session_state.chat_history:
+        role = "User" if msg["role"] == "user" else "Assistant"
+        chat_lines.append(f"{role}: {msg['content']}")
+    chat_text = "\n\n".join(chat_lines)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"chat_history_{timestamp}.txt"
+    st.download_button("Download Chat History", chat_text, file_name=filename)
