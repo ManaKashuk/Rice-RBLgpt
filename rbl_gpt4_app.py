@@ -12,8 +12,6 @@ st.image(logo, width=100)
 st.markdown("<h2 style='text-align: left; margin-top: -20px;'>Rice RBLgpt</h2>", unsafe_allow_html=True)
 st.markdown("<h5 style='text-align: left; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h5>", unsafe_allow_html=True)
 
-import pandas as pd
-from difflib import get_close_matches
 # Role priming banner
 st.markdown("🧠 _RBLgpt is trained to respond like a Rice research admin based on SOP guidance._")
 
@@ -21,6 +19,8 @@ st.markdown("🧠 _RBLgpt is trained to respond like a Rice research admin based
 uploaded_file = st.file_uploader("📎 Upload a document", type=["pdf", "docx", "xlsx", "csv"])
 if uploaded_file:
     st.success(f"Uploaded file: {uploaded_file.name}")
+import pandas as pd
+from difflib import get_close_matches
 
 # Load question/answer data
 df = pd.read_csv("sample_questions.csv")
