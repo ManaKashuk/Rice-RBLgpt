@@ -123,13 +123,13 @@ if uploaded_file:
 # ---------- Step 6: Show Chat History ----------
 st.divider()
 st.markdown("💻 **Chat History**")
-for msg in st.session_state.chat_history:
-    with st.chat_message(msg["role"]):
-        if msg["role"] == "assistant":
-            col1, col2 = st.columns([1, 10])
-            with col1:
-                st.image(logo, width=40)
-            with col2:
-                st.markdown(f"**Answer:** {msg['content']}")
-        else:
-            st.markdown(msg["content"])
+if st.session_state.chat_history:
+    chat_lines = []
+    for msg in st.session_state.chat_history:
+        role = "User" if msg["role"] == "user" else "Assistant"
+        chat_lines.append(f"{role}: {msg['content']}")
+    chat_text = "\n\n".join(chat_lines)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"chat_history_{timestamp}.txt"
+    st.download_button("Download Chat History", chat_text, file_name=filename)
+
