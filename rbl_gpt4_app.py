@@ -7,7 +7,6 @@ st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 import openai
 import pandas as pd
 import numpy as np
-# ... any other imports
 
 # Then continue with your app logic
 st.title("Welcome to Rice RBLgpt")
