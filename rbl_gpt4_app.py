@@ -1,8 +1,10 @@
 import streamlit as st
+import other_libraries  # e.g., pandas, openai, etc.
 
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
-# Now continue with the rest of your imports and code
+# Now safe to use other Streamlit commands
+st.title("Welcome to Rice RBLgpt")
 
 import pandas as pd
 from difflib import get_close_matches
