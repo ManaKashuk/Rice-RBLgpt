@@ -1,6 +1,6 @@
 # 🤖 RBLgpt – Smart Assistant for Rice Biotech LaunchPad
 
-RBLgpt is a lightweight, Streamlit-based chatbot that mimics the behavior of a Rice research admin. It assists with pre- and post-award support using SOP-style answers and an easy-to-use interface.
+RBLgpt is a lightweight, Streamlit-based chatbot that mimics the behavior of a Rice Biotech LaunchPad research admin. It assists with pre- and post-award support using SOP-style answers and an easy-to-use interface.
 
 <img src="RBLgpt_logo.png" alt="Rice Biotech LaunchPad Logo" width="200"/>
 
