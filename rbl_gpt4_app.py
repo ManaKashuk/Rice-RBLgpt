@@ -1,12 +1,14 @@
 import streamlit as st
-import other_libraries  # e.g., pandas, openai, etc.
+import pandas as pd
+import openai
+import numpy as np
+# Add any other libraries you need
 
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
 # Now safe to use other Streamlit commands
 st.title("Welcome to Rice RBLgpt")
 
-import pandas as pd
 from difflib import get_close_matches
 from PIL import Image
 from datetime import datetime
