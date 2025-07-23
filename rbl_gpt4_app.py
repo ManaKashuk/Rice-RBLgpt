@@ -1,5 +1,7 @@
 import streamlit as st
 from PIL import Image
+import pandas as pd
+from difflib import get_close_matches
 
 # Set the page configuration
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
@@ -19,8 +21,6 @@ st.markdown("🧠 _RBLgpt is trained to respond like a Rice research admin based
 uploaded_file = st.file_uploader("📎 Upload a document", type=["pdf", "docx", "xlsx", "csv"])
 if uploaded_file:
     st.success(f"Uploaded file: {uploaded_file.name}")
-import pandas as pd
-from difflib import get_close_matches
 
 # Load question/answer data
 df = pd.read_csv("sample_questions.csv")
