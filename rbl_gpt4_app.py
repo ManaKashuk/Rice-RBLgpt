@@ -4,7 +4,7 @@ from PIL import Image
 from difflib import get_close_matches
 
 # Set the page configuration
-st.set_page_config(page_title="Rice RBLgpt", layout="centered")
+st.set_page_config(page_title="Rice RBLPgpt", layout="centered")
 
 # Load and display the logo
 try:
