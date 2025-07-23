@@ -73,7 +73,8 @@ for msg in st.session_state.messages:
             show_answer_with_logo(msg["content"].replace("**Answer:** ", ""))
 
 # Text input for user's question
-user_input = st.text_input("Ask your question...", key="typed_question")
+user_input = st.text_input("Ask your question...", value=st.session_state.get("suggested_fill", ""), key="typed_question")
+st.session_state.suggested_fill = ""  # Reset suggestion after it fills the input
 
 # Submit button
 if st.button("💬 Submit") and user_input.strip():
@@ -128,4 +129,7 @@ if st.session_state.typed_question:
         st.markdown("**🔎 Suggestions:**")
         for i, q in enumerate(matches["Question"].head(5)):
             if st.button(q, key=f"suggestion_btn_{i}"):
-                st.session_state.typed_question = q
+               for i, q in enumerate(matches["Question"].head(5)):
+    if st.button(q, key=f"suggestion_btn_{i}"):
+        st.session_state.typed_question = q  # ❌ THIS LINE CAUSES CRASH
+
