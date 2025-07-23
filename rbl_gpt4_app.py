@@ -31,8 +31,7 @@ for key, default in {
 # ---------- Safe Rerun Trigger ----------
 if st.session_state.trigger_rerun:
     st.session_state.trigger_rerun = False
-    st.experimental_rerun()
-
+    
 # ---------- Step 1: Category Selection ----------
 category = st.selectbox("📂 Select a category:", df["Category"].unique())
 filtered_df = df[df["Category"] == category]
@@ -41,15 +40,13 @@ category_questions = filtered_df["Question"].tolist()
 # ---------- Step 2: Ask a Question ----------
 st.markdown("💬 **Type your question** (or select from suggestions):")
 
-selected_suggestion = st.selectbox(
-    "Suggestions:", [""] + category_questions, key="dropdown_suggest"
-)
+# Combine dropdown and input without rerun
+col1, col2 = st.columns([2, 5])
+with col1:
+    selected_suggestion = st.selectbox("Suggestions:", [""] + category_questions, key="dropdown_suggest")
+with col2:
+    question = st.text_input("Your question:", value=selected_suggestion if selected_suggestion else st.session_state.typed_question, key="typed_input")
 
-if selected_suggestion:
-    st.session_state.typed_question = selected_suggestion
-    st.session_state.trigger_rerun = True
-
-question = st.text_input("Your question:", value=st.session_state.typed_question)
 submit = st.button("Submit")
 
 # ---------- Step 3: Process the Question ----------
