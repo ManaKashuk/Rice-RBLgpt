@@ -7,7 +7,7 @@ from difflib import get_close_matches
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
 # Display the logo
-logo = Image.open("RBLgpt logo.png")
+logo = Image.open("RBLgpt_logo.png")
 st.image(logo, width=100)
 
 # Title and subtitle
