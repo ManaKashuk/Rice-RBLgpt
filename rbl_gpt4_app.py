@@ -14,7 +14,7 @@ except FileNotFoundError:
     st.warning("Logo file 'RBLgpt logo.png' not found.")
 
 # Display title and subtitle
-st.markdown("<h2 style='text-align: left; margin-top: -20px;'>Rice RBLgpt</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: left; margin-top: -20px;'>Rice RBLPgpt</h2>", unsafe_allow_html=True)
 st.markdown("<h5 style='text-align: left; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h5>", unsafe_allow_html=True)
 
 # File Upload Box
