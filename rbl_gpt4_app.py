@@ -16,6 +16,15 @@ st.image(logo, width=100)
 st.markdown("<h2 style='text-align: left; margin-top: -20px;'>Rice RBLgpt</h2>", unsafe_allow_html=True)
 st.markdown("<h5 style='text-align: left; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h5>", unsafe_allow_html=True)
 st.markdown("🧠 _RBLgpt is trained to respond like a Rice Biotech LaunchPad Research Admin based on SOP guidance._")
+
+# File uploader
+uploaded_file = st.file_uploader("📎 Upload a document", type=["pdf", "docx", "xlsx", "csv"])
+if uploaded_file:
+    st.success(f"Uploaded file: {uploaded_file.name}")
+# Download chat history
+if st.session_state.messages:
+    chat_text = "\n\n".join(f"{'You' if m['role']=='user' else 'Rice RBLgpt'}: {m['content']}" for m in st.session_state.messages)
+    st.download_button("📥 Download Chat History", data=chat_text, file_name="rblgpt_chat_history.txt", mime="text/plain")
 # ---------- Load CSV ----------
 df = pd.read_csv("sample_questions.csv")
 
