@@ -1,7 +1,5 @@
 import streamlit as st
 from PIL import Image
-import pandas as pd
-from difflib import get_close_matches
 
 # Set the page configuration
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
@@ -14,6 +12,8 @@ st.image(logo, width=100)
 st.markdown("<h2 style='text-align: left; margin-top: -20px;'>Rice RBLgpt</h2>", unsafe_allow_html=True)
 st.markdown("<h5 style='text-align: left; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h5>", unsafe_allow_html=True)
 
+import pandas as pd
+from difflib import get_close_matches
 # Role priming banner
 st.markdown("🧠 _RBLgpt is trained to respond like a Rice research admin based on SOP guidance._")
 
