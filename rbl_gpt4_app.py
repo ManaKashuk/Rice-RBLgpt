@@ -128,7 +128,7 @@ if st.session_state.typed_question:
     if not matches.empty:
         st.markdown("**🔎 Suggestions:**")
         for i, q in enumerate(matches["Question"].head(5)):
-            if st.button(q, key=f"suggestion_btn_{i}"):
+    if st.button(q, key=f"suggestion_btn_{i}"):
         for i, q in enumerate(matches["Question"].head(5)):
             if st.button(q, key=f"suggestion_btn_{i}"):
                 st.session_state.typed_question = q  # ❌ THIS LINE CAUSES CRASH
