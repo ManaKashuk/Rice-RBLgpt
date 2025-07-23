@@ -59,9 +59,19 @@ with st.expander("💡 Suggested questions from this category", expanded=False):
     for i, question in enumerate(filtered_df["Question"].tolist()):
         if st.button(question, key=f"cat_btn_{i}"):
             answer = filtered_df[filtered_df["Question"] == question]["Answer"].values[0]
-            with st.chat_message("assistant"):
-                st.markdown(f"**Answer:** {answer}")
+            col1, col2 = st.columns([1, 10])
+            with col1:
+                st.image("RBLgpt_logo.png", width=40)
+            with col2:
+                st.markdown("RBLgpt_logo.png", width=40)
             st.session_state.messages.append({"role": "assistant", "content": f"**Answer:** {answer}"})
+       def show_rblgpt_response(text):
+        col1, col2 = st.columns([1, 10])
+        with col1:
+            st.image("RBLgpt_logo.png", width=40)
+        with col2:
+            st.markdown(text)
+show_rblgpt_response(f"**Answer:** {answer}")
 
 # Display chat history
 for msg in st.session_state.messages:
