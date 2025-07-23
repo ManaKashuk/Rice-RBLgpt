@@ -9,7 +9,7 @@ import os
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 
 # Load and display the logo
-logo = Image.open(logo_path)
+logo = Image.open(RBLgpt_logo.png)
 st.image(logo, width=100)
 
 # Title and subtitle
