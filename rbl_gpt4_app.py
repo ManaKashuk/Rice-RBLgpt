@@ -4,10 +4,10 @@ from difflib import get_close_matches
 from PIL import Image
 
 # ---------- Config ----------
-st.set_page_config(page_title="Rice RBLgpt", layout="centered")
+st.set_page_config(page_title="Rice RBLPgpt", layout="centered")
 logo = Image.open("RBLgpt logo.png")
 st.image(logo, width=100)
-st.markdown("<h2>Rice RBLgpt</h2>", unsafe_allow_html=True)
+st.markdown("<h2>Rice RBLPgpt</h2>", unsafe_allow_html=True)
 st.markdown("_Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad_")
 st.markdown("🧠 _Trained to respond like a Rice Biotech LaunchPad Research Admin based on SOP guidance._")
 
