@@ -10,7 +10,7 @@ logo = Image.open("RBLgpt logo.png")
 st.image(logo, width=100)
 st.markdown("<h2>Rice RBLgpt</h2>", unsafe_allow_html=True)
 st.markdown("_Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad_")
-st.markdown("🧠 _RBLgpt is trained to respond like a Rice  Biotech LaunchPad Research Admin based on SOP guidance._")
+st.markdown("🧠 _RBLgpt is trained to respond like a Rice Biotech LaunchPad Research Admin based on SOP guidance._")
 
 # ---------- Load CSV ----------
 df = pd.read_csv("sample_questions.csv")
@@ -35,19 +35,22 @@ filtered_df = df[df["Category"] == category]
 category_questions = filtered_df["Question"].tolist()
 
 # ---------- Step 2: Ask a Question ----------
-# Show autocomplete dropdown as suggestions
-st.markdown("💬 **Type your question** (or select from suggestions):")
+st.markdown("💬 **Type your question:**")
 
-selected_suggestion = st.selectbox(
-    "Suggestions:", [""] + category_questions, key="dropdown_suggest"
-)
+# Input box
+question = st.text_input("Start typing...", value=st.session_state.typed_question, key="question_input")
+st.session_state.typed_question = question  # Store current typing
 
-if selected_suggestion:
-    st.session_state.typed_question = selected_suggestion
-    st.experimental_rerun()
+# Live suggestion filtering from category
+suggestions = [q for q in category_questions if question.lower() in q.lower() and q.lower() != question.lower()]
 
-# Input box for custom question
-question = st.text_input("Your question:", value=st.session_state.typed_question)
+# Show filtered suggestions as selectable list
+if suggestions:
+    selected = st.selectbox("🔍 Suggestions (click to autofill):", suggestions, key="suggestion_select")
+    if selected:
+        st.session_state.typed_question = selected
+        st.experimental_rerun()
+
 submit = st.button("Submit")
 
 # ---------- Step 3: Process the Question ----------
