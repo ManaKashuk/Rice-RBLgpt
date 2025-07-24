@@ -126,7 +126,7 @@ if prompt:
             st.session_state.suggested_q = local_q
             st.session_state.suggested_ans = local_ans
             st.session_state.suggested_cat = category
-            response_text += f"🤔 Did you mean (in this category): **{local_q}**?"
+            response_text += f"🤔 Did you mean: {local_q}?"
             st.session_state.awaiting_confirmation = True
         elif best_global_match:
             global_q = best_global_match[0]
@@ -134,8 +134,9 @@ if prompt:
             st.session_state.suggested_q = global_q
             st.session_state.suggested_ans = global_ans
             st.session_state.suggested_cat = guessed_category
-            response_text += f"🤔 Did you mean: **{global_q}**? (_Category: {guessed_category}_)"
+            response_text += f"🤔 Did you mean: {global_q}? [Category: {guessed_category}]"
             st.session_state.awaiting_confirmation = True
+
         else:
             # Keyword-based fallback
             keyword_matches = [q for q in all_questions if any(word in q.lower() for word in question.lower().split())]
