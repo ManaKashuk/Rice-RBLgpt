@@ -46,6 +46,11 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# ---------- File Upload ----------
+uploaded_file = st.file_uploader("📎 Upload a file for reference (optional)", type=["pdf", "docx", "txt"])
+if uploaded_file:
+    st.success(f"Uploaded file: {uploaded_file.name}")
+
 # ---------- Load CSV ----------
 df = pd.read_csv("sample_questions.csv")
 
@@ -165,3 +170,13 @@ if st.session_state.suggested_list:
             st.session_state.suggested_list = []
             st.session_state.clear_input = True
             st.rerun()
+
+# ---------- Download Chat History ----------
+if st.session_state.chat_history:
+    chat_text = ""
+    for msg in st.session_state.chat_history:
+        role = "You" if msg["role"] == "user" else "Assistant"
+        chat_text += f"{role}: {msg['content']}\n\n"
+    b64 = base64.b64encode(chat_text.encode()).decode()
+    href = f'<a href="data:file/txt;base64,{b64}" download="chat_history.txt">📥 Download Chat History</a>'
+    st.markdown(href, unsafe_allow_html=True)
