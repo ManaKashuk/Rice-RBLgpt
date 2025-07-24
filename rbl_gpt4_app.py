@@ -84,3 +84,44 @@ if prompt:
             response_text += f"The question you asked seems to belong to the '{guessed_category}' category.\n\n"
             response_text += f"A similar question in that category is:\n{global_q}\n\n"
             response_text += "Would you like to see the answer?"
+
+            # Save suggestion for confirmation
+            st.session_state.suggested_q = global_q
+            st.session_state.suggested_ans = global_ans
+            st.session_state.suggested_cat = guessed_category
+            st.session_state.awaiting_confirmation = True
+        else:
+            response_text = "I couldn't find a close match. Please try rephrasing."
+
+        st.session_state.chat_history.append({"role": "assistant", "content": response_text})
+
+    st.rerun()
+
+# ---------- If awaiting confirmation, show Yes/No buttons ----------
+if st.session_state.awaiting_confirmation:
+    st.write("")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("✅ Yes, show answer"):
+            st.session_state.chat_history.append({"role": "assistant", "content": f"Answer: {st.session_state.suggested_ans}"})
+            st.session_state.awaiting_confirmation = False
+            st.session_state.suggested_q = ""
+            st.session_state.suggested_ans = ""
+            st.rerun()
+    with col2:
+        if st.button("❌ No, ask again"):
+            st.session_state.awaiting_confirmation = False
+            st.session_state.suggested_q = ""
+            st.session_state.suggested_ans = ""
+            st.rerun()
+
+# ---------- Download Chat ----------
+if st.session_state.chat_history:
+    chat_text = "\n".join([f"{msg['role'].capitalize()}: {msg['content']}" for msg in st.session_state.chat_history])
+    st.download_button(
+        "📥 Download Chat",
+        data=chat_text.encode("utf-8"),
+        file_name="chat_history.txt",
+        mime="text/plain"
+    )
+    
