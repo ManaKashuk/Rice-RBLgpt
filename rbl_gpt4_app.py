@@ -14,69 +14,54 @@ st.markdown("🧠 _Trained to respond like a Rice Biotech LaunchPad Research Adm
 # ---------- Load CSV ----------
 df = pd.read_csv("sample_questions.csv")
 
-# ---------- Session State ----------
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-if "awaiting_confirmation" not in st.session_state:
-    st.session_state.awaiting_confirmation = False
-if "suggested_q" not in st.session_state:
-    st.session_state.suggested_q = ""
-if "suggested_ans" not in st.session_state:
-    st.session_state.suggested_ans = ""
-if "suggested_cat" not in st.session_state:
-    st.session_state.suggested_cat = ""
+# ---------- Session State Initialization ----------
+for key, default in {
+    "chat_history": [],
+    "awaiting_confirmation": False,
+    "suggested_q": "",
+    "suggested_ans": "",
+    "suggested_cat": "",
+    "typed_question": "",
+    "messages": []
+}.items():
+    if key not in st.session_state:
+        st.session_state[key] = default
 
 # ---------- Category Selection ----------
 category = st.selectbox("📂 Select a category:", ["All Categories"] + sorted(df["Category"].unique()))
 selected_df = df if category == "All Categories" else df[df["Category"] == category]
-# Suggested default questions
+
+# ---------- Suggested Questions ----------
 if not st.session_state.typed_question:
     st.markdown("💬 Try asking:")
-    examples = filtered_df["Question"].head(3).tolist()
+    examples = selected_df["Question"].head(3).tolist()
     for example in examples:
         st.markdown(f"- {example}")
 
-# Display chat history
+# ---------- Display Chat History ----------
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# ---------- Display Chat (Custom Layout) ----------
-# Suggested questions as buttons
+# ---------- Suggested Questions as Buttons ----------
 with st.expander("💡 Suggested questions from this category", expanded=False):
-    for i, question in enumerate(filtered_df["Question"].tolist()):
+    for i, question in enumerate(selected_df["Question"].tolist()):
         if st.button(question, key=f"cat_btn_{i}"):
-            answer = filtered_df[filtered_df["Question"] == question]["Answer"].values[0]
+            answer = selected_df[selected_df["Question"] == question]["Answer"].values[0]
             with st.chat_message("assistant"):
                 st.markdown(f"**Answer:** {answer}")
             st.session_state.messages.append({"role": "assistant", "content": f"**Answer:** {answer}"})
-chat_container = st.container()
-with chat_container:
-    for msg in st.session_state.chat_history:
-        if msg["role"] == "user":
-            st.markdown(f"<div style='background:#e6f7ff;padding:10px;border-radius:8px;margin:5px 0;text-align:right;'>"
-                        f"<b>You:</b> {msg['content']}</div>", unsafe_allow_html=True)
-        else:
-            st.markdown(f"""
-            <div style='display:flex;align-items:center;margin:5px 0;'>
-                <img src='data:image/png;base64,{logo.tobytes().hex()}' width='40' style='margin-right:10px;' />
-                <div style='background:#f6f6f6;padding:10px;border-radius:8px;flex:1;'>
-                    {msg['content']}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
 
 # ---------- Chat Input ----------
 prompt = st.chat_input("Start typing your question...")
 if prompt:
     question = prompt.strip()
+    st.session_state.typed_question = question
     st.session_state.chat_history.append({"role": "user", "content": question})
 
     # Reset suggestion state
-    st.session_state.awaiting_confirmation = False
-    st.session_state.suggested_q = ""
-    st.session_state.suggested_ans = ""
-    st.session_state.suggested_cat = ""
+    for key in ["awaiting_confirmation", "suggested_q", "suggested_ans", "suggested_cat"]:
+        st.session_state[key] = False if key == "awaiting_confirmation" else ""
 
     # Search logic
     match_row = selected_df[selected_df["Question"].str.lower() == question.lower()]
@@ -84,18 +69,15 @@ if prompt:
         answer = match_row.iloc[0]["Answer"]
         st.session_state.chat_history.append({"role": "assistant", "content": f"**Answer:** {answer}"})
     else:
-        # Try finding close matches
         all_questions = df["Question"].tolist()
         best_global_match = get_close_matches(question, all_questions, n=1, cutoff=0.6)
         best_local_match = get_close_matches(question, selected_df["Question"].tolist(), n=1, cutoff=0.6)
 
         guessed_category = None
+        response_text = ""
+
         if best_global_match:
             guessed_category = df[df["Question"] == best_global_match[0]].iloc[0]["Category"]
-
-        response_text = ""
-        if guessed_category and guessed_category != category:
-            response_text += f"🗂 Your question might belong to **{guessed_category}** category.\n\n"
 
         if best_local_match:
             local_q = best_local_match[0]
