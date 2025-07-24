@@ -40,7 +40,7 @@ st.markdown(
         <img src='data:image/png;base64,{logo_base64}' width='100'/>
         <h2>Rice RBLPgpt</h2>
         <h5><i>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</i></h5>
-        <p>🧠 Trained on SOPs for Smarter, Human-Centered Research Administiation.</p>
+        <p>🧠 Trained on SOPs for Smarter, Human-Centered Research Administration.</p>
     </div>
     """,
     unsafe_allow_html=True
