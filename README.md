@@ -9,5 +9,6 @@ RBLgpt is a lightweight, Streamlit-based chatbot that mimics the behavior of a R
 - 🧠 Preloaded Q&A data from sample SOPs
 - 📄 Upload support for PDF, DOCX, XLSX, and CSV (placeholder functionality)
 - 🎛️ Category-based dropdown to filter questions
-- 📎 Fake file upload UI for realism
+- 📎 File upload UI for realism
 - 💬 Streamlit Chat-style interaction
+- 
