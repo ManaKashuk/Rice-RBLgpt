@@ -17,14 +17,8 @@ df = pd.read_csv("sample_questions.csv")
 # ---------- Session State ----------
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
-if "awaiting_confirmation" not in st.session_state:
-    st.session_state.awaiting_confirmation = False
-if "suggested_q" not in st.session_state:
-    st.session_state.suggested_q = ""
-if "suggested_ans" not in st.session_state:
-    st.session_state.suggested_ans = ""
-if "suggested_cat" not in st.session_state:
-    st.session_state.suggested_cat = ""
+if "suggested_list" not in st.session_state:
+    st.session_state.suggested_list = []  # Store multiple suggestions
 
 # ---------- Step 1: Category Selection ----------
 category = st.selectbox("📂 Select a category:", ["All Categories"] + sorted(df["Category"].unique()))
@@ -34,35 +28,42 @@ selected_df = df if category == "All Categories" else df[df["Category"] == categ
 st.write("### Conversation")
 for msg in st.session_state.chat_history:
     if msg["role"] == "user":
-        st.markdown(
-            f"<div style='background:#e6f7ff;padding:10px;border-radius:8px;margin:5px 0;text-align:right;'>"
-            f"<b>You:</b> {msg['content']}</div>",
-            unsafe_allow_html=True
-        )
+        st.markdown(f"<div style='background:#e6f7ff;padding:10px;border-radius:8px;margin:5px 0;text-align:right;'>"
+                    f"<b>You:</b> {msg['content']}</div>", unsafe_allow_html=True)
     else:
-        st.markdown(
-            f"""
-            <div style='display:flex;align-items:flex-start;margin:5px 0;'>
-                <img src='data:image/png;base64,{logo.tobytes().hex()}' width='40' style='margin-right:10px;' />
-                <div style='background:#f6f6f6;padding:10px;border-radius:8px;flex:1;'>
-                    {msg['content']}
-                </div>
+        st.markdown(f"""
+        <div style='display:flex;align-items:flex-start;margin:5px 0;'>
+            <img src='data:image/png;base64,{logo.tobytes().hex()}' width='40' style='margin-right:10px;' />
+            <div style='background:#f6f6f6;padding:10px;border-radius:8px;flex:1;'>
+                {msg['content']}
             </div>
-            """,
-            unsafe_allow_html=True
-        )
+        </div>
+        """, unsafe_allow_html=True)
 
-# ---------- Chat Input ----------
-prompt = st.chat_input("Start typing your question...")
-if prompt:
-    question = prompt.strip()
+# ---------- Step 2: Chat Input with Autocomplete ----------
+question = st.text_input("Start typing your question...", value="")
+
+# Autocomplete suggestions (from selected category)
+if question.strip():
+    suggestions = [q for q in selected_df["Question"].tolist() if question.lower() in q.lower()][:5]
+    if suggestions:
+        st.markdown("**Suggestions:**")
+        for s in suggestions:
+            if st.button(s, key=f"suggest_{s}"):
+                question = s  # Autofill
+                st.session_state.chat_history.append({"role": "user", "content": question})
+
+                # Direct answer
+                ans = selected_df[selected_df["Question"] == s].iloc[0]["Answer"]
+                st.session_state.chat_history.append({"role": "assistant", "content": f"Answer: {ans}"})
+                st.rerun()
+
+# Submit button for custom question
+if st.button("Submit") and question.strip():
     st.session_state.chat_history.append({"role": "user", "content": question})
 
-    # Reset suggestion state
-    st.session_state.awaiting_confirmation = False
-    st.session_state.suggested_q = ""
-    st.session_state.suggested_ans = ""
-    st.session_state.suggested_cat = ""
+    # Reset previous suggestions
+    st.session_state.suggested_list = []
 
     # Check exact match in selected category
     match_row = selected_df[selected_df["Question"].str.lower() == question.lower()]
@@ -70,49 +71,36 @@ if prompt:
         answer = match_row.iloc[0]["Answer"]
         st.session_state.chat_history.append({"role": "assistant", "content": f"Answer: {answer}"})
     else:
-        # Try to find closest matches
+        # If no exact match → Find top 3 suggestions globally
         all_questions = df["Question"].tolist()
-        best_global_match = get_close_matches(question, all_questions, n=1, cutoff=0.6)
-        best_local_match = get_close_matches(question, selected_df["Question"].tolist(), n=1, cutoff=0.6)
+        top_matches = get_close_matches(question, all_questions, n=3, cutoff=0.5)
 
-        response_text = ""
-        if best_global_match:
-            global_q = best_global_match[0]
-            guessed_category = df[df["Question"] == global_q].iloc[0]["Category"]
-            global_ans = df[df["Question"] == global_q].iloc[0]["Answer"]
+        if top_matches:
+            guessed_category = df[df["Question"] == top_matches[0]].iloc[0]["Category"]
 
-            response_text += f"The question you asked seems to belong to the '{guessed_category}' category.\n\n"
-            response_text += f"A similar question in that category is:\n{global_q}\n\n"
-            response_text += "Would you like to see the answer?"
+            response_text = f"The question you asked seems to belong to the '{guessed_category}' category.\n\n"
+            response_text += "Here are some similar questions:\n"
+            for i, q in enumerate(top_matches, start=1):
+                response_text += f"{i}. {q}\n"
 
-            # Save suggestion for confirmation
-            st.session_state.suggested_q = global_q
-            st.session_state.suggested_ans = global_ans
-            st.session_state.suggested_cat = guessed_category
-            st.session_state.awaiting_confirmation = True
+            response_text += "\nClick a button below to see an answer."
+            st.session_state.chat_history.append({"role": "assistant", "content": response_text})
+
+            # Store these matches
+            st.session_state.suggested_list = top_matches
         else:
-            response_text = "I couldn't find a close match. Please try rephrasing."
-
-        st.session_state.chat_history.append({"role": "assistant", "content": response_text})
+            st.session_state.chat_history.append({"role": "assistant", "content": "I couldn't find a close match. Please try rephrasing."})
 
     st.rerun()
 
-# ---------- If awaiting confirmation, show Yes/No buttons ----------
-if st.session_state.awaiting_confirmation:
-    st.write("")
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("✅ Yes, show answer"):
-            st.session_state.chat_history.append({"role": "assistant", "content": f"Answer: {st.session_state.suggested_ans}"})
-            st.session_state.awaiting_confirmation = False
-            st.session_state.suggested_q = ""
-            st.session_state.suggested_ans = ""
-            st.rerun()
-    with col2:
-        if st.button("❌ No, ask again"):
-            st.session_state.awaiting_confirmation = False
-            st.session_state.suggested_q = ""
-            st.session_state.suggested_ans = ""
+# ---------- Step 3: Show Buttons for Top Suggestions ----------
+if st.session_state.suggested_list:
+    st.write("### Which question do you want the answer for?")
+    for i, q in enumerate(st.session_state.suggested_list):
+        if st.button(q, key=f"choice_{i}"):
+            ans = df[df["Question"] == q].iloc[0]["Answer"]
+            st.session_state.chat_history.append({"role": "assistant", "content": f"Answer: {ans}"})
+            st.session_state.suggested_list = []  # Clear suggestions
             st.rerun()
 
 # ---------- Download Chat ----------
@@ -124,4 +112,3 @@ if st.session_state.chat_history:
         file_name="chat_history.txt",
         mime="text/plain"
     )
-    
