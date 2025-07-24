@@ -3,7 +3,7 @@ import pandas as pd
 from difflib import get_close_matches
 from PIL import Image
 
-# ---------- Config & Logo ----------
+# ---------- Config ----------
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 logo = Image.open("RBLgpt logo.png")
 st.image(logo, width=100)
@@ -26,22 +26,27 @@ if "suggested_ans" not in st.session_state:
 if "suggested_cat" not in st.session_state:
     st.session_state.suggested_cat = ""
 
-# ---------- Step 1: Category Selection ----------
+# ---------- Category Selection ----------
 category = st.selectbox("📂 Select a category:", ["All Categories"] + sorted(df["Category"].unique()))
 selected_df = df if category == "All Categories" else df[df["Category"] == category]
 
-# ---------- Display Chat ----------
-for msg in st.session_state.chat_history:
-    if msg["role"] == "user":
-        with st.chat_message("user", avatar=None):  # No default icon
-            st.markdown(msg["content"])
-    else:
-        with st.chat_message("assistant", avatar=None):  # Custom layout
-            col1, col2 = st.columns([1, 10])
-            with col1:
-                st.image(logo, width=40)  # RBLgpt logo
-            with col2:
-                st.markdown(msg["content"])
+# ---------- Display Chat (Custom Layout) ----------
+st.write("### Conversation")
+chat_container = st.container()
+with chat_container:
+    for msg in st.session_state.chat_history:
+        if msg["role"] == "user":
+            st.markdown(f"<div style='background:#e6f7ff;padding:10px;border-radius:8px;margin:5px 0;text-align:right;'>"
+                        f"<b>You:</b> {msg['content']}</div>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"""
+            <div style='display:flex;align-items:center;margin:5px 0;'>
+                <img src='data:image/png;base64,{logo.tobytes().hex()}' width='40' style='margin-right:10px;' />
+                <div style='background:#f6f6f6;padding:10px;border-radius:8px;flex:1;'>
+                    {msg['content']}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
 # ---------- Chat Input ----------
 prompt = st.chat_input("Start typing your question...")
@@ -55,25 +60,21 @@ if prompt:
     st.session_state.suggested_ans = ""
     st.session_state.suggested_cat = ""
 
-    # Check exact match in selected category
+    # Search logic
     match_row = selected_df[selected_df["Question"].str.lower() == question.lower()]
     if not match_row.empty:
         answer = match_row.iloc[0]["Answer"]
         st.session_state.chat_history.append({"role": "assistant", "content": f"**Answer:** {answer}"})
     else:
-        # No exact match → try suggestions
+        # Try finding close matches
         all_questions = df["Question"].tolist()
-
-        # Find best global and local matches
         best_global_match = get_close_matches(question, all_questions, n=1, cutoff=0.6)
         best_local_match = get_close_matches(question, selected_df["Question"].tolist(), n=1, cutoff=0.6)
 
-        # Guess correct category from global match
         guessed_category = None
         if best_global_match:
             guessed_category = df[df["Question"] == best_global_match[0]].iloc[0]["Category"]
 
-        # Prepare response
         response_text = ""
         if guessed_category and guessed_category != category:
             response_text += f"🗂 Your question might belong to **{guessed_category}** category.\n\n"
@@ -101,30 +102,30 @@ if prompt:
 
     st.rerun()
 
-# ---------- If awaiting confirmation, show Yes/No buttons ----------
+# ---------- Suggestion Buttons ----------
 if st.session_state.awaiting_confirmation:
-    with st.chat_message("assistant", avatar=None):
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("✅ Yes, show answer"):
-                st.session_state.chat_history.append({"role": "assistant", "content": f"**Answer:** {st.session_state.suggested_ans}"})
-                st.session_state.awaiting_confirmation = False
-                st.session_state.suggested_q = ""
-                st.session_state.suggested_ans = ""
-                st.rerun()
-        with col2:
-            if st.button("❌ No, ask again"):
-                st.session_state.awaiting_confirmation = False
-                st.session_state.suggested_q = ""
-                st.session_state.suggested_ans = ""
-                st.rerun()
+    st.write("### Choose an option:")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("✅ Yes, show answer"):
+            st.session_state.chat_history.append({"role": "assistant", "content": f"**Answer:** {st.session_state.suggested_ans}"})
+            st.session_state.awaiting_confirmation = False
+            st.session_state.suggested_q = ""
+            st.session_state.suggested_ans = ""
+            st.rerun()
+    with col2:
+        if st.button("❌ No, ask again"):
+            st.session_state.awaiting_confirmation = False
+            st.session_state.suggested_q = ""
+            st.session_state.suggested_ans = ""
+            st.rerun()
 
 # ---------- Download Chat ----------
 if st.session_state.chat_history:
     chat_text = "\n".join([f"{msg['role'].capitalize()}: {msg['content']}" for msg in st.session_state.chat_history])
     st.download_button(
         "📥 Download Chat",
-        data=chat_text.encode("utf-8"),  # Convert to bytes
+        data=chat_text.encode("utf-8"),
         file_name="chat_history.txt",
         mime="text/plain"
     )
