@@ -10,7 +10,7 @@ logo = Image.open("RBLgpt logo.png")
 st.image(logo, width=100)
 st.markdown("<h2>Rice RBLgpt</h2>", unsafe_allow_html=True)
 st.markdown("_Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad_")
-st.markdown("🧠 _RBLgpt is trained to respond like a Rice Rice Biotech LaunchPad Research Admin Specialist based on SOP guidance._")
+st.markdown("🧠 _RBLgpt is trained to respond like a Rice  Biotech LaunchPad Research Admin based on SOP guidance._")
 
 # ---------- Load CSV ----------
 df = pd.read_csv("sample_questions.csv")
