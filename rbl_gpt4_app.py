@@ -49,7 +49,8 @@ if suggestions:
     selected = st.selectbox("🔍 Suggestions (click to autofill):", suggestions, key="suggestion_select")
     if selected:
         st.session_state.typed_question = selected
-        st.experimental_rerun()
+        st.rerun()
+
 
 submit = st.button("Submit")
 
