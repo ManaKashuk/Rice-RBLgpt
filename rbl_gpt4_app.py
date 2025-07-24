@@ -2,10 +2,10 @@ import streamlit as st
 import pandas as pd
 from difflib import get_close_matches
 from PIL import Image
+import io
 
 # ---------- Config & Logo ----------
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
-
 logo = Image.open("RBLgpt logo.png")
 st.image(logo, width=100)
 st.markdown("<h2>Rice RBLgpt</h2>", unsafe_allow_html=True)
@@ -34,32 +34,27 @@ category = st.selectbox("📂 Select a category:", df["Category"].unique())
 filtered_df = df[df["Category"] == category]
 category_questions = filtered_df["Question"].tolist()
 
-# ---------- Step 2: Ask a Question ----------
+# ---------- Step 2: Input Box & Suggestions ----------
 st.markdown("💬 **Type your question:**")
-
-# Input box
 question = st.text_input("Start typing...", value=st.session_state.typed_question, key="question_input")
-st.session_state.typed_question = question  # Store current typing
+st.session_state.typed_question = question
 
-# Live suggestion filtering from category
+# Suggestions from selected category
 suggestions = [q for q in category_questions if question.lower() in q.lower() and q.lower() != question.lower()]
-
-# Show filtered suggestions as selectable list
 if suggestions:
     selected = st.selectbox("🔍 Suggestions (click to autofill):", suggestions, key="suggestion_select")
     if selected:
         st.session_state.typed_question = selected
         st.rerun()
 
-
 submit = st.button("Submit")
 
 # ---------- Step 3: Process the Question ----------
 if submit and question.strip():
     question = question.strip()
-    st.session_state.typed_question = ""  # Clear for next round
+    st.session_state.typed_question = ""
 
-    # Show user's message
+    # Store user message
     st.session_state.chat_history.append({"role": "user", "content": question})
     with st.chat_message("user"):
         st.markdown(question)
@@ -76,19 +71,31 @@ if submit and question.strip():
                 st.markdown(f"**Answer:** {answer}")
         st.session_state.chat_history.append({"role": "assistant", "content": answer})
 
-    # If no exact match, try close match from ALL categories
+    # No exact match — try to infer category & suggest close match
     else:
         all_questions = df["Question"].tolist()
         close_matches = get_close_matches(question, all_questions, n=1, cutoff=0.6)
+
+        # Try to guess category by similarity
+        guessed_category = None
+        for cat in df["Category"].unique():
+            if any(get_close_matches(question, df[df["Category"] == cat]["Question"].tolist(), n=1, cutoff=0.4)):
+                guessed_category = cat
+                break
+
+        if guessed_category:
+            st.session_state.suggested_cat = guessed_category
+            st.session_state.chat_history.append({
+                "role": "assistant",
+                "content": f"🗂 Based on your question, it might relate to the **{guessed_category}** category."
+            })
 
         if close_matches:
             best_match = close_matches[0]
             match = df[df["Question"] == best_match].iloc[0]
             st.session_state.suggested_q = best_match
             st.session_state.suggested_ans = match["Answer"]
-            st.session_state.suggested_cat = match["Category"]
             st.session_state.awaiting_confirmation = True
-
         else:
             with st.chat_message("assistant"):
                 st.info("❌ Sorry, I couldn't find a similar question. Please rephrase.")
@@ -117,16 +124,22 @@ if st.session_state.awaiting_confirmation:
                 st.session_state.suggested_q = ""
                 st.session_state.suggested_ans = ""
 
-# ---------- Step 5: Show Chat History ----------
-st.divider()
-st.markdown("🗂 **Chat History**")
-for msg in st.session_state.chat_history:
-    with st.chat_message(msg["role"]):
-        if msg["role"] == "assistant":
-            col1, col2 = st.columns([1, 10])
-            with col1:
-                st.image(logo, width=40)
-            with col2:
-                st.markdown(f"**Answer:** {msg['content']}")
-        else:
-            st.markdown(msg["content"])
+# ---------- Step 5: Download Chat History ----------
+if st.session_state.chat_history:
+    def generate_chat_text():
+        text = ""
+        for msg in st.session_state.chat_history:
+            role = "You" if msg["role"] == "user" else "RBLgpt"
+            text += f"{role}: {msg['content']}\n\n"
+        return text
+
+    chat_text = generate_chat_text()
+    chat_bytes = io.BytesIO(chat_text.encode("utf-8"))
+
+    st.divider()
+    st.download_button(
+        label="📥 Download Chat History",
+        data=chat_bytes,
+        file_name="RBLgpt_chat_history.txt",
+        mime="text/plain"
+    )
