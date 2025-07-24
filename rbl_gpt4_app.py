@@ -36,9 +36,19 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 if "suggested_list" not in st.session_state:
     st.session_state.suggested_list = []
+if "last_category" not in st.session_state:
+    st.session_state.last_category = ""
 
-# ---------- Category Selection ----------
+# ---------- Step 1: Category Selection ----------
 category = st.selectbox("📂 Select a category:", ["All Categories"] + sorted(df["Category"].unique()))
+
+# Reset session if category changes
+if st.session_state.last_category != category:
+    st.session_state.chat_history = []
+    st.session_state.suggested_list = []
+    st.session_state.last_category = category
+    st.experimental_rerun()
+
 selected_df = df if category == "All Categories" else df[df["Category"] == category]
 
 # ---------- Display Chat ----------
@@ -71,8 +81,9 @@ st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- Chat Input with Autocomplete ----------
 question = st.text_input("💬 Start typing your question...")
+
+# Autocomplete suggestions
 if question.strip():
-    # Show autocomplete suggestions
     suggestions = [q for q in selected_df["Question"].tolist() if question.lower() in q.lower()][:5]
     if suggestions:
         st.markdown("<div style='margin-top:5px;'><b>Suggestions:</b></div>", unsafe_allow_html=True)
@@ -91,13 +102,13 @@ if st.button("Submit") and question.strip():
     # Reset old suggestions
     st.session_state.suggested_list = []
 
-    # Check for exact match in selected category
+    # Check for exact match
     match_row = selected_df[selected_df["Question"].str.lower() == question.lower()]
     if not match_row.empty:
         answer = match_row.iloc[0]["Answer"]
         st.session_state.chat_history.append({"role": "assistant", "content": f"<b>Answer:</b> {answer}"})
     else:
-        # No exact match → find top 3 suggestions from all questions
+        # No exact match → Top 3 matches globally
         all_questions = df["Question"].tolist()
         top_matches = get_close_matches(question, all_questions, n=3, cutoff=0.4)
 
@@ -110,14 +121,14 @@ if st.button("Submit") and question.strip():
             response_text += "<br>Select a question below to see its answer."
             st.session_state.chat_history.append({"role": "assistant", "content": response_text})
 
-            # Save suggestions for buttons
+            # Save suggestions
             st.session_state.suggested_list = top_matches
         else:
             st.session_state.chat_history.append({"role": "assistant", "content": "I couldn't find a close match. Please try rephrasing."})
 
     st.rerun()
 
-# ---------- Show Buttons for Suggestions ----------
+# ---------- Show Buttons for Top Suggestions ----------
 if st.session_state.suggested_list:
     st.markdown("<div style='margin-top:15px;'><b>Choose a question:</b></div>", unsafe_allow_html=True)
     for i, q in enumerate(st.session_state.suggested_list):
