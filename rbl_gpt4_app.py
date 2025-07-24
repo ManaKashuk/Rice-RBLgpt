@@ -35,19 +35,24 @@ filtered_df = df[df["Category"] == category]
 category_questions = filtered_df["Question"].tolist()
 
 # ---------- Step 2: Ask a Question ----------
-# Show autocomplete dropdown as suggestions
-st.markdown("💬 **Type your question** (or select from suggestions):")
+st.markdown("💬 **Type your question**:")
 
-selected_suggestion = st.selectbox(
-    "Suggestions:", [""] + category_questions, key="dropdown_suggest"
-)
+# Text input field
+question_input = st.text_input("Start typing...", value=st.session_state.typed_question, key="question_input")
 
-if selected_suggestion:
-    st.session_state.typed_question = selected_suggestion
-    st.experimental_rerun()
+# Update stored input
+st.session_state.typed_question = question_input
 
-# Input box for custom question
-question = st.text_input("Your question:", value=st.session_state.typed_question)
+# Suggestion filtering based on current input
+suggestions = [q for q in category_questions if question_input.lower() in q.lower() and q.lower() != question_input.lower()]
+
+# Show suggestions if any
+if suggestions:
+    selected = st.selectbox("🔍 Suggestions (click to fill):", suggestions, key="suggestion_select")
+    if selected:
+        st.session_state.typed_question = selected
+        st.experimental_rerun()
+
 submit = st.button("Submit")
 
 # ---------- Step 3: Process the Question ----------
