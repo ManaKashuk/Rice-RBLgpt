@@ -137,21 +137,20 @@ if prompt:
             response_text += f"🤔 Did you mean: **{global_q}**? (_Category: {guessed_category}_)"
             st.session_state.awaiting_confirmation = True
         else:
+            # Keyword-based fallback
+            keyword_matches = [q for q in all_questions if any(word in q.lower() for word in question.lower().split())]
+            if keyword_matches:
+                best_keyword_match = keyword_matches[0]
+                keyword_category = df[df["Question"] == best_keyword_match].iloc[0]["Category"]
+                keyword_answer = df[df["Question"] == best_keyword_match].iloc[0]["Answer"]
+        
+                st.session_state.suggested_q = best_keyword_match
+                st.session_state.suggested_ans = keyword_answer
+                st.session_state.suggested_cat = keyword_category
+                response_text = f"🤔 Did you mean: **{best_keyword_match}**? (_Category: {keyword_category}_)"
+                st.session_state.awaiting_confirmation = True
             else:
-    # Keyword-based fallback
-    keyword_matches = [q for q in all_questions if any(word in q.lower() for word in question.lower().split())]
-    if keyword_matches:
-        best_keyword_match = keyword_matches[0]
-        keyword_category = df[df["Question"] == best_keyword_match].iloc[0]["Category"]
-        keyword_answer = df[df["Question"] == best_keyword_match].iloc[0]["Answer"]
-
-        st.session_state.suggested_q = best_keyword_match
-        st.session_state.suggested_ans = keyword_answer
-        st.session_state.suggested_cat = keyword_category
-        response_text = f"🤔 Did you mean: **{best_keyword_match}**? (_Category: {keyword_category}_)"
-        st.session_state.awaiting_confirmation = True
-    else:
-        response_text = "Sorry, I couldn’t find a close match. Please try rephrasing or selecting a category."
+                response_text = "Sorry, I couldn’t find a close match. Please try rephrasing or selecting a category."
         
         st.session_state.chat_history.append({"role": "assistant", "content": response_text})
 
