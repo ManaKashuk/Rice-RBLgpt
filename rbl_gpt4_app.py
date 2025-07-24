@@ -29,9 +29,27 @@ if "suggested_cat" not in st.session_state:
 # ---------- Category Selection ----------
 category = st.selectbox("📂 Select a category:", ["All Categories"] + sorted(df["Category"].unique()))
 selected_df = df if category == "All Categories" else df[df["Category"] == category]
+# Suggested default questions
+if not st.session_state.typed_question:
+    st.markdown("💬 Try asking:")
+    examples = filtered_df["Question"].head(3).tolist()
+    for example in examples:
+        st.markdown(f"- {example}")
+
+# Display chat history
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
 
 # ---------- Display Chat (Custom Layout) ----------
-st.write("### Conversation")
+# Suggested questions as buttons
+with st.expander("💡 Suggested questions from this category", expanded=False):
+    for i, question in enumerate(filtered_df["Question"].tolist()):
+        if st.button(question, key=f"cat_btn_{i}"):
+            answer = filtered_df[filtered_df["Question"] == question]["Answer"].values[0]
+            with st.chat_message("assistant"):
+                st.markdown(f"**Answer:** {answer}")
+            st.session_state.messages.append({"role": "assistant", "content": f"**Answer:** {answer}"})
 chat_container = st.container()
 with chat_container:
     for msg in st.session_state.chat_history:
