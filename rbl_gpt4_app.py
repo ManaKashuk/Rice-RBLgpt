@@ -21,6 +21,19 @@ st.markdown("<h2 style='text-align: left; margin-top: -20px;'>Rice RBLgpt</h2>",
 st.markdown("<h5 style='text-align: left; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h5>", unsafe_allow_html=True)
 st.markdown("🧠 _Trained to respond like a Rice Biotech LaunchPad Research Admin based on SOP guidance._")
 
+# ---------- File Upload ----------
+uploaded_file = st.file_uploader("📎 Upload a file (PDF, CSV, etc.)", type=["pdf", "csv", "txt"])
+if uploaded_file:
+    st.success(f"Uploaded: {uploaded_file.name}")
+    # Optional: display preview for CSV or TXT
+    if uploaded_file.type == "text/csv":
+        df_uploaded = pd.read_csv(uploaded_file)
+        st.dataframe(df_uploaded.head())
+    elif uploaded_file.type == "text/plain":
+        st.text(uploaded_file.read().decode("utf-8")[:500])
+    elif uploaded_file.type == "application/pdf":
+        st.info("PDF uploaded. (Parsing not yet implemented)")
+
 # ---------- Load CSV ----------
 df = pd.read_csv("sample_questions.csv")
 
