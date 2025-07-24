@@ -49,7 +49,7 @@ if not st.session_state.typed_question:
         if st.button(example, key=f"try_btn_{i}"):
             answer = selected_df[selected_df["Question"] == example]["Answer"].values[0]
             st.session_state.chat_history.append({"role": "user", "content": example})
-            st.session_state.chat_history.append({"role": "assistant", "content": f"**Answer:** {answer}"})
+            st.session_state.chat_history.append({"role": "assistant", "content": answer})
             st.session_state.typed_question = example
             st.rerun()
             
@@ -72,15 +72,6 @@ with chat_container:
                     </div>
                 </div>
             """, unsafe_allow_html=True)
-
-# ---------- Suggested Questions as Buttons ----------
-with st.expander("💡 Suggested questions from this category", expanded=False):
-    for i, question in enumerate(selected_df["Question"].tolist()):
-        if st.button(question, key=f"cat_btn_{i}"):
-            answer = selected_df[selected_df["Question"] == question]["Answer"].values[0]
-            st.session_state.chat_history.append({"role": "assistant", "content": f"**Answer:** {answer}"})
-            st.rerun()
-
 # ---------- Chat Input ----------
 prompt = st.chat_input("Start typing your question...")
 if prompt:
@@ -137,7 +128,7 @@ if st.session_state.awaiting_confirmation:
     col1, col2 = st.columns(2)
     with col1:
         if st.button("✅ Yes, show answer"):
-            st.session_state.chat_history.append({"role": "assistant", "content": f"**Answer:** {st.session_state.suggested_ans}"})
+            st.session_state.chat_history.append({"role": "assistant", "content": {st.session_state.suggested_ans}"})
             st.session_state.awaiting_confirmation = False
             st.session_state.suggested_q = ""
             st.session_state.suggested_ans = ""
