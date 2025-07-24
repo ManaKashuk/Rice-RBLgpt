@@ -2,10 +2,20 @@ import streamlit as st
 import pandas as pd
 from difflib import get_close_matches
 from PIL import Image
+import base64
+from io import BytesIO
+
+# ---------- Helper: Convert logo to base64 ----------
+def get_base64_logo(image):
+    buffered = BytesIO()
+    image.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode()
 
 # ---------- Config ----------
 st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 logo = Image.open("RBLgpt logo.png")
+logo_base64 = get_base64_logo(logo)
+
 st.image(logo, width=100)
 st.markdown("<h2 style='text-align: left; margin-top: -20px;'>Rice RBLgpt</h2>", unsafe_allow_html=True)
 st.markdown("<h5 style='text-align: left; margin-top: -10px;'>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</h5>", unsafe_allow_html=True)
@@ -39,18 +49,32 @@ if not st.session_state.typed_question:
         st.markdown(f"- {example}")
 
 # ---------- Display Chat History ----------
-for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
-        st.markdown(msg["content"])
+chat_container = st.container()
+with chat_container:
+    for msg in st.session_state.chat_history:
+        if msg["role"] == "user":
+            st.markdown(f"""
+                <div style='background:#e6f7ff;padding:10px;border-radius:8px;margin:5px 0;text-align:right;'>
+                    <b>You:</b> {msg['content']}
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown(f"""
+                <div style='display:flex;align-items:center;margin:5px 0;'>
+                    <img src='data:image/png;base64,{logo_base64}' width='40' style='margin-right:10px;' />
+                    <div style='background:#f6f6f6;padding:10px;border-radius:8px;flex:1;'>
+                        {msg['content']}
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
 
 # ---------- Suggested Questions as Buttons ----------
 with st.expander("💡 Suggested questions from this category", expanded=False):
     for i, question in enumerate(selected_df["Question"].tolist()):
         if st.button(question, key=f"cat_btn_{i}"):
             answer = selected_df[selected_df["Question"] == question]["Answer"].values[0]
-            with st.chat_message("assistant"):
-                st.markdown(f"**Answer:** {answer}")
-            st.session_state.messages.append({"role": "assistant", "content": f"**Answer:** {answer}"})
+            st.session_state.chat_history.append({"role": "assistant", "content": f"**Answer:** {answer}"})
+            st.rerun()
 
 # ---------- Chat Input ----------
 prompt = st.chat_input("Start typing your question...")
