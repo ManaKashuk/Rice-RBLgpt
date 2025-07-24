@@ -8,7 +8,7 @@ st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 logo = Image.open("RBLgpt logo.png")
 st.image(logo, width=100)
 st.markdown("<h2>Rice RBLgpt</h2>", unsafe_allow_html=True)
-st.markdown("<h3>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad<h3>")
+st.markdown("<h3>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad<h3>", unsafe_allow_html=True)
 st.markdown("🧠 _Trained to respond like a Rice Biotech LaunchPad Research Admin based on SOP guidance._")
 
 # ---------- Load CSV ----------
