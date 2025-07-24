@@ -12,7 +12,7 @@ def get_base64_logo(image):
     return base64.b64encode(buffered.getvalue()).decode()
 
 # ---------- Config ----------
-st.set_page_config(page_title="Rice RBLgpt", layout="centered")
+st.set_page_config(page_title="Rice RBLPgpt", layout="centered")
 logo = Image.open("RBLgpt logo.png")
 logo_base64 = get_base64_logo(logo)
 
