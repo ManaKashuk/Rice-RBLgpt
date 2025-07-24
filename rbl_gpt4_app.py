@@ -45,15 +45,6 @@ if "clear_input" not in st.session_state:
 # ---------- Category Selection ----------
 category = st.selectbox("📂 Select a category:", ["All Categories"] + sorted(df["Category"].unique()))
 
-# Reset session if category changes
-if st.session_state.last_category != category:
-    st.session_state.chat_history = []
-    st.session_state.suggested_list = []
-    st.session_state.last_category = category
-    st.experimental_rerun()
-
-selected_df = df if category == "All Categories" else df[df["Category"] == category]
-
 # ---------- Show some example questions to the user ----------
 if not st.session_state.typed_question:
     st.markdown("💬 Try asking:")
@@ -66,6 +57,15 @@ with st.expander("💡 Suggested questions from this category", expanded=False):
             answer = filtered_df.loc[filtered_df["Question"] == question, "Answer"].values[0]
             show_answer_with_logo(answer)
             st.session_state.messages.append({"role": "assistant", "content": f"**Answer:** {answer}"})
+
+# Reset session if category changes
+if st.session_state.last_category != category:
+    st.session_state.chat_history = []
+    st.session_state.suggested_list = []
+    st.session_state.last_category = category
+    st.experimental_rerun()
+
+selected_df = df if category == "All Categories" else df[df["Category"] == category]
 
 # ---------- Display Chat ----------
 st.markdown("<div style='margin-top:20px;'>", unsafe_allow_html=True)
