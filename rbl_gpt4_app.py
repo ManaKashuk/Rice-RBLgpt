@@ -179,20 +179,7 @@ if st.session_state.suggested_list:
             st.session_state.suggested_list = []
             st.session_state.clear_input = True
             st.rerun()
-            
-# ---------- Show Related Questions After Every Answer ----------
-if st.session_state.chat_history and st.session_state.chat_history[-1]["role"] == "assistant" and not st.session_state.suggested_list:
-    if len(selected_df) > 3:
-        related_questions = random.sample(selected_df["Question"].tolist(), 3)
-        st.markdown("<div style='margin-top:15px;'><b>Want to continue? Try these:</b></div>", unsafe_allow_html=True)
-        for rq in related_questions:
-            if st.button(rq, key=f"related_{rq}"):
-                st.session_state.chat_history.append({"role": "user", "content": rq})
-                ans = selected_df[selected_df["Question"] == rq].iloc[0]["Answer"]
-                st.session_state.chat_history.append({"role": "assistant", "content": f"<b>Answer:</b> {ans}"})
-                st.session_state.clear_input = True
-                st.rerun()
-                
+
 # ---------- Download Chat History ----------
 if st.session_state.chat_history:
     chat_text = ""
