@@ -4,84 +4,73 @@ from difflib import get_close_matches
 from PIL import Image
 import io
 
-# --- Setup ---
-st.set_page_config(page_title="Rice RBLgpt", layout="centered")
+# --- CONFIG ---
+st.set_page_config("RBLgpt", layout="centered")
+
+# --- LOGO + TITLE ---
 logo = Image.open("RBLgpt logo.png")
-st.image(logo, width=100)
-st.markdown("<h2>Rice RBLgpt</h2>", unsafe_allow_html=True)
-st.markdown("_Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad_")
+st.image(logo, width=90)
+st.markdown("## Rice RBLgpt")
+st.markdown("_Smart Assistant for Rice Biotech LaunchPad_")
 
 # --- Load CSV ---
 df = pd.read_csv("sample_questions.csv")
 
-# --- Category Selection ---
-category = st.selectbox("📂 Select a category:", df["Category"].unique())
-filtered_df = df[df["Category"] == category]
-category_questions = filtered_df["Question"].tolist()
+# --- SESSION STATE INIT ---
+if "chat" not in st.session_state:
+    st.session_state.chat = []  # stores all {"role": "user"/"assistant", "content": str}
+if "suggested" not in st.session_state:
+    st.session_state.suggested = None  # stores a suggestion dict if needed
 
-# --- Session State Setup ---
-for key in ["chat_history", "typed_question", "suggested_q", "suggested_ans", "suggested_cat", "awaiting_confirmation"]:
-    if key not in st.session_state:
-        st.session_state[key] = [] if "history" in key else ""
-
-# --- Show Chat Messages ---
-for msg in st.session_state.chat_history:
+# --- DISPLAY CHAT ---
+for msg in st.session_state.chat:
     with st.chat_message(msg["role"]):
-        if msg["role"] == "assistant":
-            col1, col2 = st.columns([1, 10])
-            with col1:
-                st.image(logo, width=40)
-            with col2:
-                st.markdown(f"**Answer:** {msg['content']}")
-        else:
-            st.markdown(msg["content"])
+        st.markdown(msg["content"])
 
-# --- Main Input Prompt ---
-question = st.chat_input("Start typing...")
-if question:
-    question = question.strip()
-    st.session_state.chat_history.append({"role": "user", "content": question})
-
-    # --- Check for Exact Match ---
-    match_row = df[df["Question"].str.lower() == question.lower()]
-    if not match_row.empty:
-        answer = match_row.iloc[0]["Answer"]
-        st.session_state.chat_history.append({"role": "assistant", "content": answer})
-        st.rerun()
-
-    # --- Try Close Match ---
-    all_questions = df["Question"].tolist()
-    close_matches = get_close_matches(question, all_questions, n=1, cutoff=0.5)
-
-    if close_matches:
-        best_match = close_matches[0]
-        match_row = df[df["Question"] == best_match].iloc[0]
-        st.session_state.suggested_q = best_match
-        st.session_state.suggested_ans = match_row["Answer"]
-        st.session_state.suggested_cat = match_row["Category"]
-        st.session_state.awaiting_confirmation = True
-        st.rerun()
-
-# --- Handle Suggested Answer ---
-if st.session_state.awaiting_confirmation:
+# --- HANDLE SUGGESTION RESPONSE ---
+if st.session_state.suggested:
     with st.chat_message("assistant"):
-        st.markdown(f"🤔 Did you mean:\n> **{st.session_state.suggested_q}**\n\n_Category: {st.session_state.suggested_cat}_")
+        st.markdown(f"🤔 Did you mean:\n**{st.session_state.suggested['q']}**\n\n_Category: {st.session_state.suggested['cat']}_")
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("✅ Yes, show answer", key="yes_confirm"):
-                st.session_state.chat_history.append({"role": "assistant", "content": st.session_state.suggested_ans})
-                st.session_state.awaiting_confirmation = False
-                st.session_state.suggested_q = ""
+            if st.button("✅ Yes, show answer"):
+                st.session_state.chat.append({"role": "assistant", "content": st.session_state.suggested["ans"]})
+                st.session_state.suggested = None
                 st.rerun()
         with col2:
-            if st.button("❌ No, ask again", key="no_confirm"):
-                st.session_state.awaiting_confirmation = False
-                st.session_state.suggested_q = ""
-                st.session_state.suggested_ans = ""
+            if st.button("❌ No, ask again"):
+                st.session_state.suggested = None
                 st.rerun()
 
-# --- Download Chat History ---
-if st.session_state.chat_history:
-    chat_text = "\n".join([f"{msg['role'].capitalize()}: {msg['content']}" for msg in st.session_state.chat_history])
-    buffer = io.StringIO(chat_text)
-    st.download_button("📥 Download Chat History", buffer, file_name="chat_history.txt", mime="text/plain")
+# --- MAIN CHAT INPUT ---
+if not st.session_state.suggested:
+    prompt = st.chat_input("Start typing...")
+    if prompt:
+        st.session_state.chat.append({"role": "user", "content": prompt})
+
+        # Search CSV
+        exact_match = df[df["Question"].str.lower() == prompt.lower()]
+        if not exact_match.empty:
+            answer = exact_match.iloc[0]["Answer"]
+            st.session_state.chat.append({"role": "assistant", "content": answer})
+            st.rerun()
+        else:
+            # Try fuzzy match
+            all_qs = df["Question"].tolist()
+            matches = get_close_matches(prompt, all_qs, n=1, cutoff=0.5)
+            if matches:
+                best = matches[0]
+                row = df[df["Question"] == best].iloc[0]
+                st.session_state.suggested = {
+                    "q": best,
+                    "ans": row["Answer"],
+                    "cat": row["Category"]
+                }
+                st.rerun()
+
+# --- DOWNLOAD CHAT HISTORY ---
+if st.session_state.chat:
+    lines = [f"{msg['role'].capitalize()}: {msg['content']}" for msg in st.session_state.chat]
+    download_text = "\n\n".join(lines)
+    buffer = io.StringIO(download_text)
+    st.download_button("📥 Download Chat", buffer, file_name="chat_history.txt", mime="text/plain")
