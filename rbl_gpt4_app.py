@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from difflib import get_close_matches
+from difflib import SequenceMatcher, get_close_matches
 from PIL import Image
 import base64
 from io import BytesIO
@@ -42,7 +42,7 @@ if "last_category" not in st.session_state:
 if "clear_input" not in st.session_state:
     st.session_state.clear_input = False
 
-# ---------- Step 1: Category Selection ----------
+# ---------- Category Selection ----------
 category = st.selectbox("📂 Select a category:", ["All Categories"] + sorted(df["Category"].unique()))
 
 # Reset session if category changes
@@ -84,7 +84,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- Chat Input ----------
 question = st.text_input("💬 Start typing your question...", value="" if st.session_state.clear_input else "")
-st.session_state.clear_input = False  # Reset flag after clearing
+st.session_state.clear_input = False  # Reset after clearing
 
 # Autocomplete suggestions
 if question.strip():
@@ -107,30 +107,38 @@ if st.button("Submit") and question.strip():
     st.session_state.suggested_list = []
     st.session_state.clear_input = True  # Clear input after submit
 
-    # Check exact match
-    match_row = selected_df[selected_df["Question"].str.lower() == question.lower()]
-    if not match_row.empty:
-        answer = match_row.iloc[0]["Answer"]
-        st.session_state.chat_history.append({"role": "assistant", "content": f"<b>Answer:</b> {answer}"})
+    # Check for exact or close match
+    all_questions = df["Question"].tolist()
+    best_match = None
+    best_score = 0
+    for q in all_questions:
+        score = SequenceMatcher(None, question.lower(), q.lower()).ratio()
+        if score > best_score:
+            best_match = q
+            best_score = score
+
+    if best_score >= 0.85:  # Only answer if confidence is high
+        ans = df[df["Question"] == best_match].iloc[0]["Answer"]
+        category_note = df[df["Question"] == best_match].iloc[0]["Category"]
+        response_text = f"<b>Answer:</b> {ans}<br><i>(Note: This question belongs to the '{category_note}' category.)</i>"
+        st.session_state.chat_history.append({"role": "assistant", "content": response_text})
     else:
         if previous_suggestions:
-            best_match = previous_suggestions[0]
-            ans = df[df["Question"] == best_match].iloc[0]["Answer"]
-            category_note = df[df["Question"] == best_match].iloc[0]["Category"]
+            # User ignored suggestions previously → show best global match
+            ans = df[df["Question"] == previous_suggestions[0]].iloc[0]["Answer"]
+            category_note = df[df["Question"] == previous_suggestions[0]].iloc[0]["Category"]
             response_text = f"<b>Answer:</b> {ans}<br><i>(Note: This question belongs to the '{category_note}' category.)</i>"
             st.session_state.chat_history.append({"role": "assistant", "content": response_text})
         else:
-            # Top 3 suggestions globally
-            all_questions = df["Question"].tolist()
+            # Suggest top 3 questions instead of giving a wrong answer
             top_matches = get_close_matches(question, all_questions, n=3, cutoff=0.4)
-
             if top_matches:
                 guessed_category = df[df["Question"] == top_matches[0]].iloc[0]["Category"]
-                response_text = f"The question you asked seems to belong to the <b>{guessed_category}</b> category.<br><br>"
+                response_text = f"I couldn't find an exact match, but your question seems related to <b>{guessed_category}</b>.<br><br>"
                 response_text += "Here are some similar questions:<br>"
                 for i, q in enumerate(top_matches, start=1):
                     response_text += f"{i}. {q}<br>"
-                response_text += "<br>Select a question below to see its answer."
+                response_text += "<br>Select one below to see its answer."
                 st.session_state.chat_history.append({"role": "assistant", "content": response_text})
                 st.session_state.suggested_list = top_matches
             else:
