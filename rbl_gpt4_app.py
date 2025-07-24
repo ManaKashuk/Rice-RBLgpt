@@ -125,10 +125,12 @@ if question.strip():
 # ---------- Submit Question ----------
 if st.button("Submit") and question.strip():
     st.session_state.chat_history.append({"role": "user", "content": question})
+
     previous_suggestions = st.session_state.suggested_list
     st.session_state.suggested_list = []
-    st.session_state.clear_input = True
+    st.session_state.clear_input = True  # Clear input after submit
 
+    # Check for exact or close match
     all_questions = df["Question"].tolist()
     best_match = None
     best_score = 0
@@ -138,14 +140,20 @@ if st.button("Submit") and question.strip():
             best_match = q
             best_score = score
 
-    if best_score >= 0.85:
+    if best_score >= 0.85:  # Only answer if confidence is high
         ans = df[df["Question"] == best_match].iloc[0]["Answer"]
-        st.session_state.chat_history.append({"role": "assistant", "content": ans})
+        category_note = df[df["Question"] == best_match].iloc[0]["Category"]
+        response_text = f"<b>Answer:</b> {ans}<br><i>(Note: This question belongs to the '{category_note}' category.)</i>"
+        st.session_state.chat_history.append({"role": "assistant", "content": response_text})
     else:
         if previous_suggestions:
+            # User ignored suggestions previously → show best global match
             ans = df[df["Question"] == previous_suggestions[0]].iloc[0]["Answer"]
-            st.session_state.chat_history.append({"role": "assistant", "content": ans})
+            category_note = df[df["Question"] == previous_suggestions[0]].iloc[0]["Category"]
+            response_text = f"<b>Answer:</b> {ans}<br><i>(Note: This question belongs to the '{category_note}' category.)</i>"
+            st.session_state.chat_history.append({"role": "assistant", "content": response_text})
         else:
+            # Suggest top 3 questions instead of giving a wrong answer
             top_matches = get_close_matches(question, all_questions, n=3, cutoff=0.4)
             if top_matches:
                 guessed_category = df[df["Question"] == top_matches[0]].iloc[0]["Category"]
@@ -158,6 +166,7 @@ if st.button("Submit") and question.strip():
                 st.session_state.suggested_list = top_matches
             else:
                 st.session_state.chat_history.append({"role": "assistant", "content": "I couldn't find a close match. Please try rephrasing."})
+
     st.rerun()
 
 # ---------- Show Buttons for Top Suggestions ----------
