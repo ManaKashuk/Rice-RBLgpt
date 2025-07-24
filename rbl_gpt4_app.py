@@ -25,7 +25,6 @@ st.markdown("🧠 _Trained to respond like a Rice Biotech LaunchPad Research Adm
 uploaded_file = st.file_uploader("📎 Upload a file (PDF, CSV, etc.)", type=["pdf", "csv", "txt"])
 if uploaded_file:
     st.success(f"Uploaded: {uploaded_file.name}")
-    # Optional: display preview for CSV or TXT
     if uploaded_file.type == "text/csv":
         df_uploaded = pd.read_csv(uploaded_file)
         st.dataframe(df_uploaded.head())
@@ -45,16 +44,23 @@ for key, default in {
     "suggested_ans": "",
     "suggested_cat": "",
     "typed_question": "",
-    "messages": []
+    "messages": [],
+    "prev_category": "All Categories"
 }.items():
     if key not in st.session_state:
         st.session_state[key] = default
 
 # ---------- Category Selection ----------
 category = st.selectbox("📂 Select a category:", ["All Categories"] + sorted(df["Category"].unique()))
+
+# Reset typed_question if category changed
+if category != st.session_state.prev_category:
+    st.session_state.typed_question = ""
+    st.session_state.prev_category = category
+
 selected_df = df if category == "All Categories" else df[df["Category"] == category]
 
-# ---------- Suggested Questions ----------
+# ---------- Suggested Questions (Top 3 Buttons) ----------
 if not st.session_state.typed_question:
     st.markdown("💬 Try asking:")
     examples = selected_df["Question"].head(3).tolist()
@@ -65,7 +71,7 @@ if not st.session_state.typed_question:
             st.session_state.chat_history.append({"role": "assistant", "content": answer})
             st.session_state.typed_question = example
             st.rerun()
-            
+
 # ---------- Display Chat History ----------
 chat_container = st.container()
 with chat_container:
@@ -85,7 +91,9 @@ with chat_container:
                     </div>
                 </div>
             """, unsafe_allow_html=True)
+
 # ---------- Chat Input ----------
+st.markdown("<div style='margin-top:-10px;'></div>", unsafe_allow_html=True)  # Reduce spacing
 prompt = st.chat_input("Start typing your question...")
 if prompt:
     question = prompt.strip()
@@ -100,7 +108,7 @@ if prompt:
     match_row = selected_df[selected_df["Question"].str.lower() == question.lower()]
     if not match_row.empty:
         answer = match_row.iloc[0]["Answer"]
-        st.session_state.chat_history.append({"role": "assistant", "content": f"**Answer:** {answer}"})
+        st.session_state.chat_history.append({"role": "assistant", "content": answer})
     else:
         all_questions = df["Question"].tolist()
         best_global_match = get_close_matches(question, all_questions, n=1, cutoff=0.6)
@@ -135,7 +143,7 @@ if prompt:
 
     st.rerun()
 
-# ---------- Suggestion Buttons ----------
+# ---------- Suggestion Confirmation Buttons ----------
 if st.session_state.awaiting_confirmation:
     st.write("### Choose an option:")
     col1, col2 = st.columns(2)
