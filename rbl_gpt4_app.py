@@ -28,77 +28,82 @@ if "suggested_cat" not in st.session_state:
     st.session_state.suggested_cat = ""
 if "typed_question" not in st.session_state:
     st.session_state.typed_question = ""
+if "show_input" not in st.session_state:
+    st.session_state.show_input = True
 
 # ---------- Step 1: Category Selection ----------
 category = st.selectbox("📂 Select a category:", df["Category"].unique())
 filtered_df = df[df["Category"] == category]
 category_questions = filtered_df["Question"].tolist()
 
-# ---------- Step 2: Input Box & Suggestions ----------
-st.markdown("💬 **Type your question:**")
-question = st.text_input("Start typing...", value=st.session_state.typed_question, key="question_input")
-st.session_state.typed_question = question
+# ---------- Step 2: Ask Question ----------
+if st.session_state.show_input:
+    st.markdown("💬 **Type your question:**")
+    question = st.text_input("Start typing...", value=st.session_state.typed_question, key="question_input")
+    st.session_state.typed_question = question
 
-# Suggestions from selected category
-suggestions = [q for q in category_questions if question.lower() in q.lower() and q.lower() != question.lower()]
-if suggestions:
-    selected = st.selectbox("🔍 Suggestions (click to autofill):", suggestions, key="suggestion_select")
-    if selected:
-        st.session_state.typed_question = selected
-        st.rerun()
+    # Suggestions from selected category
+    suggestions = [q for q in category_questions if question.lower() in q.lower() and q.lower() != question.lower()]
+    if suggestions:
+        selected = st.selectbox("🔍 Suggestions (click to autofill):", suggestions, key="suggestion_select")
+        if selected:
+            st.session_state.typed_question = selected
+            st.rerun()
 
-submit = st.button("Submit")
+    submit = st.button("Submit")
 
-# ---------- Step 3: Process the Question ----------
-if submit and question.strip():
-    question = question.strip()
-    st.session_state.typed_question = ""
+    # ---------- Step 3: Process the Question ----------
+    if submit and question.strip():
+        question = question.strip()
+        st.session_state.typed_question = ""
+        st.session_state.show_input = False  # Hide input until answer is shown
 
-    # Store user message
-    st.session_state.chat_history.append({"role": "user", "content": question})
-    with st.chat_message("user"):
-        st.markdown(question)
+        # Show user question
+        st.session_state.chat_history.append({"role": "user", "content": question})
+        with st.chat_message("user"):
+            st.markdown(question)
 
-    # Check exact match in selected category
-    match_row = filtered_df[filtered_df["Question"].str.lower() == question.lower()]
-    if not match_row.empty:
-        answer = match_row.iloc[0]["Answer"]
-        with st.chat_message("assistant"):
-            col1, col2 = st.columns([1, 10])
-            with col1:
-                st.image(logo, width=40)
-            with col2:
-                st.markdown(f"**Answer:** {answer}")
-        st.session_state.chat_history.append({"role": "assistant", "content": answer})
-
-    # No exact match — try to infer category & suggest close match
-    else:
-        all_questions = df["Question"].tolist()
-        close_matches = get_close_matches(question, all_questions, n=1, cutoff=0.6)
-
-        # Try to guess category by similarity
-        guessed_category = None
-        for cat in df["Category"].unique():
-            if any(get_close_matches(question, df[df["Category"] == cat]["Question"].tolist(), n=1, cutoff=0.4)):
-                guessed_category = cat
-                break
-
-        if guessed_category:
-            st.session_state.suggested_cat = guessed_category
-            st.session_state.chat_history.append({
-                "role": "assistant",
-                "content": f"🗂 Based on your question, it might relate to the **{guessed_category}** category."
-            })
-
-        if close_matches:
-            best_match = close_matches[0]
-            match = df[df["Question"] == best_match].iloc[0]
-            st.session_state.suggested_q = best_match
-            st.session_state.suggested_ans = match["Answer"]
-            st.session_state.awaiting_confirmation = True
-        else:
+        # Check exact match
+        match_row = filtered_df[filtered_df["Question"].str.lower() == question.lower()]
+        if not match_row.empty:
+            answer = match_row.iloc[0]["Answer"]
             with st.chat_message("assistant"):
-                st.info("❌ Sorry, I couldn't find a similar question. Please rephrase.")
+                col1, col2 = st.columns([1, 10])
+                with col1:
+                    st.image(logo, width=40)
+                with col2:
+                    st.markdown(f"**Answer:** {answer}")
+            st.session_state.chat_history.append({"role": "assistant", "content": answer})
+            st.session_state.show_input = True
+
+        else:
+            # Suggest close match from ALL categories
+            all_questions = df["Question"].tolist()
+            close_matches = get_close_matches(question, all_questions, n=1, cutoff=0.6)
+
+            # Guess possible category
+            guessed_category = None
+            for cat in df["Category"].unique():
+                if any(get_close_matches(question, df[df["Category"] == cat]["Question"].tolist(), n=1, cutoff=0.4)):
+                    guessed_category = cat
+                    break
+
+            if guessed_category:
+                st.session_state.suggested_cat = guessed_category
+                st.session_state.chat_history.append({
+                    "role": "assistant",
+                    "content": f"🗂 This might belong to the **{guessed_category}** category."
+                })
+
+            if close_matches:
+                best_match = close_matches[0]
+                match = df[df["Question"] == best_match].iloc[0]
+                st.session_state.suggested_q = best_match
+                st.session_state.suggested_ans = match["Answer"]
+                st.session_state.suggested_cat = match["Category"]
+                st.session_state.awaiting_confirmation = True
+            else:
+                st.session_state.show_input = True  # Still allow typing again
 
 # ---------- Step 4: Handle Confirmation ----------
 if st.session_state.awaiting_confirmation:
@@ -117,12 +122,14 @@ if st.session_state.awaiting_confirmation:
                 st.session_state.awaiting_confirmation = False
                 st.session_state.suggested_q = ""
                 st.session_state.suggested_ans = ""
+                st.session_state.show_input = True
         with col2:
             if st.button("❌ No, ask again", key="no_confirm"):
                 st.info("Okay, feel free to rephrase your question.")
                 st.session_state.awaiting_confirmation = False
                 st.session_state.suggested_q = ""
                 st.session_state.suggested_ans = ""
+                st.session_state.show_input = True
 
 # ---------- Step 5: Download Chat History ----------
 if st.session_state.chat_history:
