@@ -14,6 +14,11 @@ st.markdown("_Smart Assistant for Pre- & Post-Award Support at Rice Biotech Laun
 # --- Load CSV ---
 df = pd.read_csv("sample_questions.csv")
 
+# --- Category Selection ---
+category = st.selectbox("📂 Select a category:", df["Category"].unique())
+filtered_df = df[df["Category"] == category]
+category_questions = filtered_df["Question"].tolist()
+
 # --- Session State Setup ---
 for key in ["chat_history", "typed_question", "suggested_q", "suggested_ans", "suggested_cat", "awaiting_confirmation"]:
     if key not in st.session_state:
