@@ -54,6 +54,19 @@ if st.session_state.last_category != category:
 
 selected_df = df if category == "All Categories" else df[df["Category"] == category]
 
+# ---------- Show some example questions to the user ----------
+if not st.session_state.typed_question:
+    st.markdown("💬 Try asking:")
+    for q in filtered_df["Question"].head(3):
+        st.markdown(f"- {q}")
+# ---------- Suggested questions as buttons ----------
+with st.expander("💡 Suggested questions from this category", expanded=False):
+    for i, question in enumerate(filtered_df["Question"].tolist()):
+        if st.button(question, key=f"cat_btn_{i}"):
+            answer = filtered_df.loc[filtered_df["Question"] == question, "Answer"].values[0]
+            show_answer_with_logo(answer)
+            st.session_state.messages.append({"role": "assistant", "content": f"**Answer:** {answer}"})
+
 # ---------- Display Chat ----------
 st.markdown("<div style='margin-top:20px;'>", unsafe_allow_html=True)
 for msg in st.session_state.chat_history:
