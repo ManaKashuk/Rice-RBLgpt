@@ -13,16 +13,16 @@ def get_image_base64(img):
     return base64.b64encode(buffer.getvalue()).decode()
 
 # ---------- Config & Logo ----------
-st.set_page_config(page_title="Rice RBLPgpt", layout="centered")
+st.set_page_config(page_title="Rice RBLgpt", layout="centered")
 logo = Image.open("RBLgpt logo.png")
 logo_base64 = get_image_base64(logo)
 
 st.markdown(
     f"""
-    <div style='text-align:left;'>
+    <div style='text-align:center;'>
         <img src='data:image/png;base64,{logo_base64}' width='100'/>
-        <h2>Rice RBLPgpt</h2>
-        <h5><i>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</i></h5>
+        <h2>Rice RBLgpt</h2>
+        <p><i>Smart Assistant for Pre- & Post-Award Support at Rice Biotech LaunchPad</i></p>
         <p>🧠 Trained to respond like a Rice Biotech LaunchPad Research Admin based on SOP guidance.</p>
     </div>
     """,
@@ -83,11 +83,9 @@ for msg in st.session_state.chat_history:
 st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- Chat Input ----------
-if st.session_state.clear_input:
-    question = st.text_input("💬 Start typing your question...", value="")
-    st.session_state.clear_input = False
-else:
-    question = st.text_input("💬 Start typing your question...")
+question = st.text_input("💬 Start typing your question...", value="" if st.session_state.clear_input else "")
+st.session_state.clear_input = False  # Reset after clearing
+
 # Autocomplete suggestions
 if question.strip():
     suggestions = [q for q in selected_df["Question"].tolist() if question.lower() in q.lower()][:5]
