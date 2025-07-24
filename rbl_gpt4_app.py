@@ -18,7 +18,7 @@ def show_answer_with_logo(answer):
         <div style='display:flex;align-items:flex-start;margin:10px 0;'>
             <img src='data:image/png;base64,{logo_base64}' width='40' style='margin-right:10px;border-radius:8px;'/>
             <div style='background:#f6f6f6;padding:12px;border-radius:12px;max-width:75%;'>
-                <b>Answer:</b> {answer}
+                {answer}
             </div>
         </div>
         """,
@@ -71,22 +71,20 @@ if st.session_state.last_category != category:
 
 selected_df = df if category == "All Categories" else df[df["Category"] == category]
 
-# Show some example questions to the user
+# ---------- Chat Input ----------
 question = st.text_input("💬 Start typing your question...", value="" if st.session_state.clear_input else "")
 st.session_state.clear_input = False
 
+# ---------- Show Example Questions as Buttons ----------
 if not question.strip():
-    st.markdown("💬 Try asking:")
-    for q in selected_df["Question"].head(3):
-        st.markdown(f"- {q}")
-
-# Suggested questions as buttons
-with st.expander("💡 Suggested questions from this category", expanded=False):
-    for i, question_text in enumerate(selected_df["Question"].tolist()):
-        if st.button(question_text, key=f"cat_btn_{i}"):
-            answer = selected_df.loc[selected_df["Question"] == question_text, "Answer"].values[0]
-            show_answer_with_logo(answer)
-            st.session_state.chat_history.append({"role": "assistant", "content": f"**Answer:** {answer}"})
+    st.markdown("💬 Try asking one of these:")
+    for i, q in enumerate(selected_df["Question"].head(3)):
+        if st.button(q, key=f"example_{i}"):
+            st.session_state.chat_history.append({"role": "user", "content": q})
+            ans = selected_df[selected_df["Question"] == q].iloc[0]["Answer"]
+            st.session_state.chat_history.append({"role": "assistant", "content": ans})
+            st.session_state.clear_input = True
+            st.rerun()
 
 # ---------- Display Chat ----------
 st.markdown("<div style='margin-top:20px;'>", unsafe_allow_html=True)
@@ -103,17 +101,7 @@ for msg in st.session_state.chat_history:
             unsafe_allow_html=True
         )
     else:
-        st.markdown(
-            f"""
-            <div style='display:flex;align-items:flex-start;margin:10px 0;'>
-                <img src='data:image/png;base64,{logo_base64}' width='40' style='margin-right:10px;border-radius:8px;'/>
-                <div style='background:#f6f6f6;padding:12px;border-radius:12px;max-width:75%;'>
-                    {msg['content']}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        show_answer_with_logo(msg["content"])
 st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- Autocomplete Suggestions ----------
@@ -125,7 +113,7 @@ if question.strip():
             if st.button(s, key=f"suggest_{s}"):
                 st.session_state.chat_history.append({"role": "user", "content": s})
                 ans = selected_df[selected_df["Question"] == s].iloc[0]["Answer"]
-                st.session_state.chat_history.append({"role": "assistant", "content": f"<b>Answer:</b> {ans}"})
+                st.session_state.chat_history.append({"role": "assistant", "content": ans})
                 st.session_state.clear_input = True
                 st.rerun()
 
@@ -136,7 +124,6 @@ if st.button("Submit") and question.strip():
     st.session_state.suggested_list = []
     st.session_state.clear_input = True
 
-    # Check for exact or close match
     all_questions = df["Question"].tolist()
     best_match = None
     best_score = 0
@@ -148,15 +135,11 @@ if st.button("Submit") and question.strip():
 
     if best_score >= 0.85:
         ans = df[df["Question"] == best_match].iloc[0]["Answer"]
-        category_note = df[df["Question"] == best_match].iloc[0]["Category"]
-        response_text = f"<b>Answer:</b> {ans}<br><i>(Note: This question belongs to the '{category_note}' category.)</i>"
-        st.session_state.chat_history.append({"role": "assistant", "content": response_text})
+        st.session_state.chat_history.append({"role": "assistant", "content": ans})
     else:
         if previous_suggestions:
             ans = df[df["Question"] == previous_suggestions[0]].iloc[0]["Answer"]
-            category_note = df[df["Question"] == previous_suggestions[0]].iloc[0]["Category"]
-            response_text = f"<b>Answer:</b> {ans}<br><i>(Note: This question belongs to the '{category_note}' category.)</i>"
-            st.session_state.chat_history.append({"role": "assistant", "content": response_text})
+            st.session_state.chat_history.append({"role": "assistant", "content": ans})
         else:
             top_matches = get_close_matches(question, all_questions, n=3, cutoff=0.4)
             if top_matches:
@@ -178,7 +161,7 @@ if st.session_state.suggested_list:
     for i, q in enumerate(st.session_state.suggested_list):
         if st.button(q, key=f"choice_{i}"):
             ans = df[df["Question"] == q].iloc[0]["Answer"]
-            st.session_state.chat_history.append({"role": "assistant", "content": f"<b>Answer:</b> {ans}"})
+            st.session_state.chat_history.append({"role": "assistant", "content": ans})
             st.session_state.suggested_list = []
             st.session_state.clear_input = True
             st.rerun()
