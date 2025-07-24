@@ -45,9 +45,14 @@ selected_df = df if category == "All Categories" else df[df["Category"] == categ
 if not st.session_state.typed_question:
     st.markdown("💬 Try asking:")
     examples = selected_df["Question"].head(3).tolist()
-    for example in examples:
-        st.markdown(f"- {example}")
-
+    for i, example in enumerate(examples):
+        if st.button(example, key=f"try_btn_{i}"):
+            answer = selected_df[selected_df["Question"] == example]["Answer"].values[0]
+            st.session_state.chat_history.append({"role": "user", "content": example})
+            st.session_state.chat_history.append({"role": "assistant", "content": f"**Answer:** {answer}"})
+            st.session_state.typed_question = example
+            st.rerun()
+            
 # ---------- Display Chat History ----------
 chat_container = st.container()
 with chat_container:
