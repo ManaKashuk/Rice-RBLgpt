@@ -39,7 +39,7 @@ if "suggested_list" not in st.session_state:
 if "last_category" not in st.session_state:
     st.session_state.last_category = ""
 
-# ---------- Step 1: Category Selection ----------
+# ---------- Category Selection ----------
 category = st.selectbox("📂 Select a category:", ["All Categories"] + sorted(df["Category"].unique()))
 
 # Reset session if category changes
@@ -100,31 +100,40 @@ if st.button("Submit") and question.strip():
     st.session_state.chat_history.append({"role": "user", "content": question})
 
     # Reset old suggestions
+    previous_suggestions = st.session_state.suggested_list
     st.session_state.suggested_list = []
 
-    # Check for exact match
+    # Check for exact match in selected category
     match_row = selected_df[selected_df["Question"].str.lower() == question.lower()]
     if not match_row.empty:
         answer = match_row.iloc[0]["Answer"]
         st.session_state.chat_history.append({"role": "assistant", "content": f"<b>Answer:</b> {answer}"})
     else:
-        # No exact match → Top 3 matches globally
-        all_questions = df["Question"].tolist()
-        top_matches = get_close_matches(question, all_questions, n=3, cutoff=0.4)
-
-        if top_matches:
-            guessed_category = df[df["Question"] == top_matches[0]].iloc[0]["Category"]
-            response_text = f"The question you asked seems to belong to the <b>{guessed_category}</b> category.<br><br>"
-            response_text += "Here are some similar questions:<br>"
-            for i, q in enumerate(top_matches, start=1):
-                response_text += f"{i}. {q}<br>"
-            response_text += "<br>Select a question below to see its answer."
+        # If previous suggestions existed → user ignored them → show best global match answer with note
+        if previous_suggestions:
+            best_match = previous_suggestions[0]  # first suggested question
+            ans = df[df["Question"] == best_match].iloc[0]["Answer"]
+            category_note = df[df["Question"] == best_match].iloc[0]["Category"]
+            response_text = f"<b>Answer:</b> {ans}<br><i>(Note: This question belongs to the '{category_note}' category.)</i>"
             st.session_state.chat_history.append({"role": "assistant", "content": response_text})
-
-            # Save suggestions
-            st.session_state.suggested_list = top_matches
         else:
-            st.session_state.chat_history.append({"role": "assistant", "content": "I couldn't find a close match. Please try rephrasing."})
+            # No exact match → find top 3 globally
+            all_questions = df["Question"].tolist()
+            top_matches = get_close_matches(question, all_questions, n=3, cutoff=0.4)
+
+            if top_matches:
+                guessed_category = df[df["Question"] == top_matches[0]].iloc[0]["Category"]
+                response_text = f"The question you asked seems to belong to the <b>{guessed_category}</b> category.<br><br>"
+                response_text += "Here are some similar questions:<br>"
+                for i, q in enumerate(top_matches, start=1):
+                    response_text += f"{i}. {q}<br>"
+                response_text += "<br>Select a question below to see its answer."
+                st.session_state.chat_history.append({"role": "assistant", "content": response_text})
+
+                # Save suggestions for next submit
+                st.session_state.suggested_list = top_matches
+            else:
+                st.session_state.chat_history.append({"role": "assistant", "content": "I couldn't find a close match. Please try rephrasing."})
 
     st.rerun()
 
