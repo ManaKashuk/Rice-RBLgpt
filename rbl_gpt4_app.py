@@ -128,7 +128,7 @@ if st.session_state.awaiting_confirmation:
     col1, col2 = st.columns(2)
     with col1:
         if st.button("✅ Yes, show answer"):
-            st.session_state.chat_history.append({"role": "assistant", "content": st.session_state.suggested_ans}"})
+            st.session_state.chat_history.append({"role": "assistant", "content": st.session_state.suggested_ans})
             st.session_state.awaiting_confirmation = False
             st.session_state.suggested_q = ""
             st.session_state.suggested_ans = ""
